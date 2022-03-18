@@ -3,10 +3,44 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
         xmlns:local="clr-namespace:MSWebView4WPF"
+        xmlns:commands="clr-namespace:MSWebView4WPF.Commands"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Microsoft Edge WebView2" Height="768" Width="1024"
+        WindowStartupLocation="CenterScreen">
 
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static commands:BasedCommands.LoadImageCommand}" Executed="LoadImageExecuted" />
+    </Window.CommandBindings>
+
+    <Grid>
+        <Border Grid.Row="0" Padding="5" BorderThickness="1">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Style="{StaticResource MaterialDesignFlatSecondaryDarkBgButton}"
+                    ToolTip="直接使用WPF的控件加载图片"
+                    Content="原生加载"
+                    Command="{x:Static commands:BasedCommands.LoadImageCommand}"
+                    IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+
+                <Label x:Name="LblMessage" Margin="10 0 0 0" VerticalAlignment="Center" Content="图片加载时间" />
+
+            </StackPanel>
+        </Border>
+
+        <Image Grid.Row="1" x:Name="ImgOriginMode" />
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
     </Grid>
 </Window>
