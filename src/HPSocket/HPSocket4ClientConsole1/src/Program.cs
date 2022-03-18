@@ -3,13 +3,18 @@ using HPSocket.Tcp;
 using HPSocket4ClientConsole1;
 
 Console.Title = "基于HP-Socket实现的示例程序 - 客户端";
+uint chunkSize = 1024 * 32; // 32KB
 
 
 Console.WriteLine("创建客户端。");
-using ITcpClient client = new TcpClient()
+using ITcpPackClient client = new TcpPackClient()
 {
-    SocketBufferSize = 4096,
+    SocketBufferSize = chunkSize,
     Async = true,
+
+    MaxPackSize = chunkSize,
+    PackHeaderFlag = 0x01,
+
     Address = "127.0.0.1",
     Port = 5257
 };
@@ -26,15 +31,14 @@ if (!client.Connect())
     Console.WriteLine($"error code: {client.ErrorCode}, error message: {client.ErrorMessage}");
 }
 
-// 等待服务停止
-//await client.WaitAsync().ConfigureAwait(false);
-
-
 Console.WriteLine("成功创建客户端。");
 Console.WriteLine("--------------------------------------------------");
 Console.WriteLine();
 
 await new LargeImageSendTest().StartAsync(client).ConfigureAwait(false);
+
+// 等待服务停止
+await client.WaitAsync().ConfigureAwait(false);
 
 
 Console.WriteLine("等待读取输入的信息：");

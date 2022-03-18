@@ -3,12 +3,17 @@ using HPSocket.Tcp;
 
 
 Console.Title = "基于HP-Socket实现的示例程序 - 服务端";
+uint chunkSize = 1024 * 32; // 32KB
 
 
 Console.WriteLine("创建服务端。");
-using ITcpServer server = new TcpPackServer()
+using ITcpPackServer server = new TcpPackServer()
 {
-    SocketBufferSize = 4096,
+    SocketBufferSize = chunkSize,
+
+    MaxPackSize = chunkSize,
+    PackHeaderFlag = 0x01,
+
     Address = "0.0.0.0",
     Port = 5257
 };
@@ -27,7 +32,7 @@ if (!server.Start())
 }
 
 // 等待服务停止
-//await server.WaitAsync().ConfigureAwait(false);
+await server.WaitAsync().ConfigureAwait(false);
 
 
 Console.WriteLine("成功创建服务端，地址：[0.0.0.0:5257]。");
