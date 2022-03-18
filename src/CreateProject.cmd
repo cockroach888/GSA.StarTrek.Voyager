@@ -51,6 +51,36 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s HPSocket HPSocket\HPSocket4Clie
 
 
 
+@echo.
+@echo.
+@echo.
+@echo\&echo  ---------- 轻量级跨平台服务器程序框架 ﹫ SuperSocketFrame 2 ----------
+
+dotnet new console -lang C# -f net6.0 -n SuperSocket4ServerConsole1 -o SuperSocketFrame\SuperSocket4ServerConsole1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s SuperSocketFrame SuperSocketFrame\SuperSocket4ServerConsole1\src
+
+dotnet new console -lang C# -f net6.0 -n SuperSocket4ClientConsole1 -o SuperSocketFrame\SuperSocket4ClientConsole1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s SuperSocketFrame SuperSocketFrame\SuperSocket4ClientConsole1\src
+
+
+
+
+
+@echo.
+@echo.
+@echo.
+@echo\&echo  ---------- Microsoft Edge WebView2 ﹫ MSWebView2 2 ----------
+
+dotnet new winforms -lang C# -f net6.0 -n MSWebView4WinForm -o MSWebView2\MSWebView4WinForm\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView4WinForm\src
+
+dotnet new wpf -lang C# -f net6.0 -n MSWebView4WPF -o MSWebView2\MSWebView4WPF\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView4WPF\src
+
+
+
+
+
 ::@echo\&echo 所有项目自动创建工作已结束，600 秒后将自动退出本自动创建程序。
 ::timeout /t 600
 
