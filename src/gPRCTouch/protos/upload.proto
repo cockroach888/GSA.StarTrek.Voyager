@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "SightX2gRPC";
+
+package upload;
+
+service Uploader {
+	rpc UploadFile (stream UploadFileRequest) returns (UploadFileRespone);
+}
+
+message UploadFileRequest {
+	FileMetadata metadata = 1;
+	bytes data = 2;
+}
+
+message UploadFileRespone {
+	string id = 1;
+}
+
+message FileMetadata {
+	string file_name = 1;
+	int64 file_size = 2;
+}
