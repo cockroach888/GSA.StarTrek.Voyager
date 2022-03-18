@@ -36,6 +36,21 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s gPRCTouch gPRCTouch\gPRC4Client
 
 
 
+@echo.
+@echo.
+@echo.
+@echo\&echo  ---------- 高性能网络通信框架 ﹫ HP-Socket 2 ----------
+
+dotnet new console -lang C# -f net6.0 -n HPSocket4ServerConsole1 -o HPSocket\HPSocket4ServerConsole1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s HPSocket HPSocket\HPSocket4ServerConsole1\src
+
+dotnet new console -lang C# -f net6.0 -n HPSocket4ClientConsole1 -o HPSocket\HPSocket4ClientConsole1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s HPSocket HPSocket\HPSocket4ClientConsole1\src
+
+
+
+
+
 ::@echo\&echo 所有项目自动创建工作已结束，600 秒后将自动退出本自动创建程序。
 ::timeout /t 600
 
