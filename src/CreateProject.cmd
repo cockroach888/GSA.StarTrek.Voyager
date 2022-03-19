@@ -81,6 +81,18 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView
 
 
 
+@echo.
+@echo.
+@echo.
+@echo\&echo  ---------- MahApps.Metro ﹫ MahAppsMetroUI 1 ----------
+
+dotnet new wpf -lang C# -f net6.0 -n MahAppsMetroAppx -o MahAppsMetroUI\MahAppsMetroAppx\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MahAppsMetroUI MahAppsMetroUI\MahAppsMetroAppx\src
+
+
+
+
+
 ::@echo\&echo 所有项目自动创建工作已结束，600 秒后将自动退出本自动创建程序。
 ::timeout /t 600
 
