@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,30 +24,54 @@ namespace MSWebView4WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private readonly Dispatcher _mainDispatcher = Dispatcher.CurrentDispatcher;
-
         public MainWindow()
         {
             InitializeComponent();
         }
 
+
+        private void WebView2OriginalExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+            Window window = new FormView.WebView2OriginalWindow()
+            {
+                ShowActivated = true,
+                ShowInTaskbar = false
+            };
+            window.Show();
+        }
+
+        private void FileBrowserExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new();
+            dialog.Title = "请选择需要上传的图片";
+            dialog.DefaultExt = ".jpg";
+            dialog.Filter = "图片文件|*.png;*.jpg;*.jpeg;*.tif";
+            dialog.Multiselect = false;
+
+            if (dialog.ShowDialog(this).GetValueOrDefault())
+            {
+                TxtLoadingFiles.Text = string.Join(',', dialog.FileNames);
+            }
+        }
+
         private void LoadImageExecuted(object target, ExecutedRoutedEventArgs e)
         {
-            string imageFilePath = @"E:\data\TestImage\HYP_LR.tif";
+            string imageFilePath = TxtLoadingFiles.Text.Trim();
+
+            if (!File.Exists(imageFilePath))
+            {
+                MessageBox.Show("请先选择需要加载的图片文件。");
+                return;
+            }
 
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.UriSource = new Uri(imageFilePath);
+            bitmap.UriSource = new Uri(imageFilePath, UriKind.Absolute);
             bitmap.EndInit();
 
             ImgOriginMode.Source = bitmap;
-
-            //await _mainDispatcher.BeginInvoke(DispatcherPriority.Background, new Action<BitmapImage>((image) =>
-            //{
-            //    ImgOriginMode.Source = image;
-            //}), bitmap);
 
             stopwatch.Stop();
 

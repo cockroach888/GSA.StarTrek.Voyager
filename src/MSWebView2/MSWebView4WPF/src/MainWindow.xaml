@@ -14,31 +14,76 @@
         xmlns:local="clr-namespace:MSWebView4WPF"
         xmlns:commands="clr-namespace:MSWebView4WPF.Commands"
         mc:Ignorable="d"
-        Title="Microsoft Edge WebView2" Height="768" Width="1024"
+        Title="Main Window" Height="900" Width="1440"
         WindowStartupLocation="CenterScreen">
 
     <Window.CommandBindings>
+        <CommandBinding Command="{x:Static commands:FunctionFormsCommands.WebView2OriginalCommand}" Executed="WebView2OriginalExecuted" />
+        
+        <CommandBinding Command="{x:Static commands:BasedCommands.FileBrowserCommand}" Executed="FileBrowserExecuted" />
         <CommandBinding Command="{x:Static commands:BasedCommands.LoadImageCommand}" Executed="LoadImageExecuted" />
     </Window.CommandBindings>
 
     <Grid>
-        <Border Grid.Row="0" Padding="5" BorderThickness="1">
+        <GroupBox
+            Margin="0 0 0 5"
+            Grid.Row="0"
+            Header="功能窗体"
+            Style="{DynamicResource MaterialDesignGroupBox}"
+            materialDesign:ColorZoneAssist.Mode="Dark">
             <StackPanel Orientation="Horizontal">
-                <Button
-                    Style="{StaticResource MaterialDesignFlatSecondaryDarkBgButton}"
-                    ToolTip="直接使用WPF的控件加载图片"
-                    Content="原生加载"
-                    Command="{x:Static commands:BasedCommands.LoadImageCommand}"
-                    IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
-
-                <Label x:Name="LblMessage" Margin="10 0 0 0" VerticalAlignment="Center" Content="图片加载时间" />
-
+                <Button Content="WebView2 原生加载" Command="{x:Static commands:FunctionFormsCommands.WebView2OriginalCommand}" />
+                <Button Margin="5 0 0 0" Content="Temp" />
+                <Button Margin="5 0 0 0" Content="Temp" />
             </StackPanel>
+        </GroupBox>
+
+        <Border Grid.Row="1" Margin="0 0 0 3" Padding="3 0 3 5" BorderBrush="DarkBlue" BorderThickness="0 0 0 1">
+            <Grid>
+                <TextBox
+                    x:Name="TxtLoadingFiles"
+                    Margin="3 0 0 0"
+                    Grid.Column="0"
+                    materialDesign:TextFieldAssist.HasClearButton="True"
+                    materialDesign:HintAssist.Hint="待上传图片文件"
+                    VerticalAlignment="Center" />
+
+                <Button
+                    Margin="3 0 0 0"
+                    Grid.Column="1"
+                    Content="浏览"
+                    Style="{StaticResource MaterialDesignPaperLightButton}"
+                    ToolTip="Resource name: MaterialDesignPaperLightButton"
+                    Command="{x:Static commands:BasedCommands.FileBrowserCommand}" />
+
+                <Button
+                    Margin="5 0 0 0"
+                    Grid.Column="2"
+                    Content="WPF原生加载"
+                    ToolTip="直接使用WPF的控件加载图片"
+                    Style="{StaticResource MaterialDesignFlatSecondaryDarkBgButton}"
+                    Command="{x:Static commands:BasedCommands.LoadImageCommand}" />
+
+                <Label
+                    x:Name="LblMessage"
+                    Margin="5 0 5 0"
+                    Grid.Column="3"
+                    Content="图片加载时间"
+                    VerticalAlignment="Center" />
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="98" />
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+            </Grid>
         </Border>
 
-        <Image Grid.Row="1" x:Name="ImgOriginMode" />
+        <Image Grid.Row="2" x:Name="ImgOriginMode" />
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
