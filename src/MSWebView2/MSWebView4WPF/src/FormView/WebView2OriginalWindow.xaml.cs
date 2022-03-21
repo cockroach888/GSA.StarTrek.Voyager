@@ -196,7 +196,11 @@ namespace MSWebView4WPF.FormView
         {
             if (_webView != null && _webView.CoreWebView2 != null)
             {
-                _webView.CoreWebView2.SetVirtualHostNameToFolderMapping(TxtHostName.Text.Trim(), TxtFolderPath.Text.Trim(), CoreWebView2HostResourceAccessKind.Allow);
+                string hostName = TxtHostName.Text.Trim();
+                string folderPath = TxtFolderPath.Text.Trim();
+                _webView.CoreWebView2.SetVirtualHostNameToFolderMapping(hostName, folderPath, CoreWebView2HostResourceAccessKind.Allow);
+
+                MessageBox.Show($"完成本地目录（{folderPath}）到虚拟主机（{hostName}）的映射。", "系统提示", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

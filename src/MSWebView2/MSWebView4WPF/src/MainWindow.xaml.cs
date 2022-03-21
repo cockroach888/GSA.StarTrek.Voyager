@@ -43,14 +43,16 @@ namespace MSWebView4WPF
         private void FileBrowserExecuted(object target, ExecutedRoutedEventArgs e)
         {
             OpenFileDialog dialog = new();
-            dialog.Title = "请选择需要上传的图片";
+            dialog.Title = "请选择需要加载的图片";
             dialog.DefaultExt = ".jpg";
-            dialog.Filter = "图片文件|*.png;*.jpg;*.jpeg;*.tif";
+            dialog.Filter = "图片文件|*.png;*.jpg;*.jpeg;*.tif;*.bmp";
             dialog.Multiselect = false;
 
             if (dialog.ShowDialog(this).GetValueOrDefault())
             {
-                TxtLoadingFiles.Text = string.Join(',', dialog.FileNames);
+                //TxtLoadingFiles.Text = string.Join(',', dialog.FileNames);
+                TxtLoadingFiles.Text = dialog.FileName;
+                LoadImage(dialog.FileName);
             }
         }
 
@@ -64,10 +66,16 @@ namespace MSWebView4WPF
                 return;
             }
 
+            LoadImage(imageFilePath);
+        }
+
+        private void LoadImage(string imageFilePath)
+        {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            BitmapImage bitmap = new BitmapImage();
+            BitmapImage bitmap = new();
             bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.UriSource = new Uri(imageFilePath, UriKind.Absolute);
             bitmap.EndInit();
 

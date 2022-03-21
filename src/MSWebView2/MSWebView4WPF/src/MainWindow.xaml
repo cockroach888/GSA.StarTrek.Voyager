@@ -26,15 +26,15 @@
 
     <Grid>
         <GroupBox
-            Margin="0 0 0 5"
+            Margin="10"
             Grid.Row="0"
             Header="功能窗体"
             Style="{DynamicResource MaterialDesignGroupBox}"
             materialDesign:ColorZoneAssist.Mode="Dark">
             <StackPanel Orientation="Horizontal">
                 <Button Content="WebView2 原生加载" Command="{x:Static commands:FunctionFormsCommands.WebView2OriginalCommand}" />
-                <Button Margin="5 0 0 0" Content="Temp" />
-                <Button Margin="5 0 0 0" Content="Temp" />
+                <!--<Button Margin="5 0 0 0" Content="Temp" />
+                <Button Margin="5 0 0 0" Content="Temp" />-->
             </StackPanel>
         </GroupBox>
 
@@ -51,7 +51,7 @@
                 <Button
                     Margin="3 0 0 0"
                     Grid.Column="1"
-                    Content="浏览"
+                    Content="浏览并加载"
                     Style="{StaticResource MaterialDesignPaperLightButton}"
                     ToolTip="Resource name: MaterialDesignPaperLightButton"
                     Command="{x:Static commands:BasedCommands.FileBrowserCommand}" />
@@ -73,8 +73,8 @@
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="98" />
-                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="118" />
+                    <ColumnDefinition Width="150" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
             </Grid>
