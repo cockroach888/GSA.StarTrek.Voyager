@@ -5,10 +5,78 @@
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:mahui="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                    xmlns:local="clr-namespace:MahAppsMetroAppx"
+                   xmlns:commands="clr-namespace:MahAppsMetroAppx.Commands"
                    mc:Ignorable="d"
                    Title="MainWindow" Height="900" Width="1440"
-                   WindowStartupLocation="CenterOwner">
-    <Grid>
+                   WindowStartupLocation="CenterScreen">
 
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static commands:FunctionFormsCommands.WebView2OriginalCommand}" Executed="WebView2OriginalExecuted" />
+
+        <CommandBinding Command="{x:Static commands:BasedCommands.FileBrowserCommand}" Executed="FileBrowserExecuted" />
+        <CommandBinding Command="{x:Static commands:BasedCommands.LoadImageCommand}" Executed="LoadImageExecuted" />
+    </Window.CommandBindings>
+
+    <Grid>
+        <StackPanel
+            Margin="10"
+            Grid.Row="0"
+            Orientation="Horizontal">
+            <Button Content="WebView2 原生加载" Command="{x:Static commands:FunctionFormsCommands.WebView2OriginalCommand}" />
+            <!--<Button Margin="5 0 0 0" Content="Temp" />
+            <Button Margin="5 0 0 0" Content="Temp" />-->
+        </StackPanel>
+
+        <Border
+            Grid.Row="1"
+            Margin="0 0 0 3"
+            Padding="3 0 3 5"
+            BorderBrush="DarkBlue"
+            BorderThickness="0 0 0 1">
+            <Grid>
+                <TextBox
+                    x:Name="TxtLoadingFiles"
+                    Margin="3 0 0 0"
+                    Grid.Column="0"
+                    mahui:TextBoxHelper.Watermark="待上传图片文件"
+                    mahui:TextBoxHelper.ClearTextButton="True"
+                    VerticalAlignment="Center" />
+
+                <Button
+                    Margin="3 0 0 0"
+                    Grid.Column="1"
+                    Content="浏览并加载"
+                    Command="{x:Static commands:BasedCommands.FileBrowserCommand}" />
+
+                <Button
+                    Margin="5 0 0 0"
+                    Grid.Column="2"
+                    Content="WPF原生加载"
+                    ToolTip="直接使用WPF的控件加载图片"
+                    Command="{x:Static commands:BasedCommands.LoadImageCommand}" />
+
+                <Label
+                    x:Name="LblMessage"
+                    Margin="5 0 5 0"
+                    Grid.Column="3"
+                    Content="图片加载时间"
+                    VerticalAlignment="Center" />
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="98" />
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </Border>
+
+        <Image Grid.Row="2" x:Name="ImgOriginMode" />
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
     </Grid>
 </mahui:MetroWindow>
