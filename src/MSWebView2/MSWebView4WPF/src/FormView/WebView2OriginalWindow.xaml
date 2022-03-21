@@ -14,6 +14,7 @@
         <CommandBinding Command="{x:Static commands:BrowserCommands.GoForwardCommand}" Executed="GoForwardExecuted" />
         <CommandBinding Command="{x:Static commands:BrowserCommands.NavigateCommand}" Executed="NavigateExecuted" />
         <CommandBinding Command="{x:Static commands:BrowserCommands.VirtualMappingCommand}" Executed="VirtualMappingExecuted" />
+        <CommandBinding Command="{x:Static commands:BrowserCommands.DevToolsCommand}" Executed="DevToolsExecuted" />
     </Window.CommandBindings>
 
     <DockPanel>
@@ -30,6 +31,8 @@
                     <TextBox Grid.Column="5" x:Name="TxtHostName" Margin="10 0 0 0" Text="sightx.com" VerticalContentAlignment="Center" />
                     <Button Grid.Column="6" Content="Mapping" Margin="3 0 0 0" Command="{x:Static commands:BrowserCommands.VirtualMappingCommand}" />
 
+                    <Button Grid.Column="7" Content="DevTool" Margin="3 0 0 0" Command="{x:Static commands:BrowserCommands.DevToolsCommand}" />
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
@@ -37,6 +40,7 @@
                         <ColumnDefinition Width="60" />
                         <ColumnDefinition Width="350" />
                         <ColumnDefinition Width="250" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                 </Grid>

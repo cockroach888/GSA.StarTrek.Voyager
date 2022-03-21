@@ -6,6 +6,8 @@ namespace MSWebView4WPF.Commands
     {
         public static RoutedCommand FileBrowserCommand { get; } = new();
 
+        public static RoutedCommand FolderBrowserCommand { get; } = new();
+
         public static RoutedCommand LoadImageCommand { get; } = new();
     }
 }

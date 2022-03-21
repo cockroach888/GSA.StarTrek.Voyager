@@ -11,5 +11,7 @@ namespace MSWebView4WPF.Commands
         public static RoutedCommand NavigateCommand = new();
 
         public static RoutedCommand VirtualMappingCommand = new();
+
+        public static RoutedCommand DevToolsCommand = new();
     }
 }

@@ -47,12 +47,48 @@ namespace MSWebView4WPF
             dialog.DefaultExt = ".jpg";
             dialog.Filter = "图片文件|*.png;*.jpg;*.jpeg;*.tif;*.bmp";
             dialog.Multiselect = false;
+            dialog.CheckFileExists = true;
+            dialog.CheckPathExists = true;
 
             if (dialog.ShowDialog(this).GetValueOrDefault())
             {
                 //TxtLoadingFiles.Text = string.Join(',', dialog.FileNames);
                 TxtLoadingFiles.Text = dialog.FileName;
                 LoadImage(dialog.FileName);
+            }
+
+            LstFileListView.Items.Clear();
+        }
+
+        private void FolderBrowserExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+            string filePath = TxtLoadingFiles.Text.Trim();
+
+            if (!File.Exists(filePath))
+            {
+                MessageBox.Show("请先选择需要浏览的图片目录。");
+                return;
+            }
+
+            LstFileListView.Items.Clear();
+            string? folderPath = System.IO.Path.GetDirectoryName(filePath);
+            if (folderPath != null)
+            {
+                IEnumerable<string> files = Directory.EnumerateFiles(folderPath);
+
+                foreach (string file in files)
+                {
+                    ListViewItem item = new();
+                    item.Content = System.IO.Path.GetFileName(file);
+                    item.Tag = file;
+                    item.Selected += (s, e) =>
+                    {
+                        LoadImage($"{item.Tag}");
+                    };
+
+                    LstFileListView.Items.Add(item);
+                }
+
             }
         }
 
