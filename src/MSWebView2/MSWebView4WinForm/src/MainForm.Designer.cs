@@ -28,11 +28,117 @@ partial class MainForm
     /// </summary>
     private void InitializeComponent()
     {
-        this.components = new System.ComponentModel.Container();
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 450);
-        this.Text = "MainForm";
+            this.PalMain = new System.Windows.Forms.Panel();
+            this.PalToolbar = new System.Windows.Forms.Panel();
+            this.TxtHostName = new System.Windows.Forms.TextBox();
+            this.BtnDevTool = new System.Windows.Forms.Button();
+            this.BtnMapping = new System.Windows.Forms.Button();
+            this.TxtFolderPath = new System.Windows.Forms.TextBox();
+            this.TxtNavigate = new System.Windows.Forms.TextBox();
+            this.BtnNavigate = new System.Windows.Forms.Button();
+            this.PalToolbar.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // PalMain
+            // 
+            this.PalMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PalMain.Location = new System.Drawing.Point(0, 82);
+            this.PalMain.Name = "PalMain";
+            this.PalMain.Size = new System.Drawing.Size(1416, 754);
+            this.PalMain.TabIndex = 1;
+            // 
+            // PalToolbar
+            // 
+            this.PalToolbar.Controls.Add(this.TxtNavigate);
+            this.PalToolbar.Controls.Add(this.TxtHostName);
+            this.PalToolbar.Controls.Add(this.BtnDevTool);
+            this.PalToolbar.Controls.Add(this.BtnNavigate);
+            this.PalToolbar.Controls.Add(this.BtnMapping);
+            this.PalToolbar.Controls.Add(this.TxtFolderPath);
+            this.PalToolbar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.PalToolbar.Location = new System.Drawing.Point(0, 0);
+            this.PalToolbar.Name = "PalToolbar";
+            this.PalToolbar.Size = new System.Drawing.Size(1416, 82);
+            this.PalToolbar.TabIndex = 2;
+            // 
+            // TxtHostName
+            // 
+            this.TxtHostName.Location = new System.Drawing.Point(372, 18);
+            this.TxtHostName.Name = "TxtHostName";
+            this.TxtHostName.Size = new System.Drawing.Size(200, 34);
+            this.TxtHostName.TabIndex = 2;
+            this.TxtHostName.Text = "sightx.com";
+            // 
+            // BtnDevTool
+            // 
+            this.BtnDevTool.Location = new System.Drawing.Point(672, 15);
+            this.BtnDevTool.Name = "BtnDevTool";
+            this.BtnDevTool.Size = new System.Drawing.Size(110, 40);
+            this.BtnDevTool.TabIndex = 1;
+            this.BtnDevTool.Text = "DevTool";
+            this.BtnDevTool.UseVisualStyleBackColor = true;
+            this.BtnDevTool.Click += new System.EventHandler(this.BtnDevTool_Click);
+            // 
+            // BtnMapping
+            // 
+            this.BtnMapping.Location = new System.Drawing.Point(582, 15);
+            this.BtnMapping.Name = "BtnMapping";
+            this.BtnMapping.Size = new System.Drawing.Size(85, 40);
+            this.BtnMapping.TabIndex = 1;
+            this.BtnMapping.Text = " 映射";
+            this.BtnMapping.UseVisualStyleBackColor = true;
+            this.BtnMapping.Click += new System.EventHandler(this.BtnMapping_Click);
+            // 
+            // TxtFolderPath
+            // 
+            this.TxtFolderPath.Location = new System.Drawing.Point(12, 18);
+            this.TxtFolderPath.Name = "TxtFolderPath";
+            this.TxtFolderPath.Size = new System.Drawing.Size(350, 34);
+            this.TxtFolderPath.TabIndex = 0;
+            this.TxtFolderPath.Text = "D:\\data\\LargeImages";
+            // 
+            // TxtNavigate
+            // 
+            this.TxtNavigate.Location = new System.Drawing.Point(824, 18);
+            this.TxtNavigate.Name = "TxtNavigate";
+            this.TxtNavigate.Size = new System.Drawing.Size(475, 34);
+            this.TxtNavigate.TabIndex = 2;
+            this.TxtNavigate.Text = "https://sightx.com/1.html";
+            // 
+            // BtnNavigate
+            // 
+            this.BtnNavigate.Location = new System.Drawing.Point(1305, 15);
+            this.BtnNavigate.Name = "BtnNavigate";
+            this.BtnNavigate.Size = new System.Drawing.Size(85, 40);
+            this.BtnNavigate.TabIndex = 1;
+            this.BtnNavigate.Text = " 导航";
+            this.BtnNavigate.UseVisualStyleBackColor = true;
+            this.BtnNavigate.Click += new System.EventHandler(this.BtnNavigate_Click);
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 28F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(1416, 836);
+            this.Controls.Add(this.PalMain);
+            this.Controls.Add(this.PalToolbar);
+            this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "MainForm";
+            this.PalToolbar.ResumeLayout(false);
+            this.PalToolbar.PerformLayout();
+            this.ResumeLayout(false);
+
     }
 
     #endregion
+
+    private Panel PalMain;
+    private Panel PalToolbar;
+    private TextBox TxtHostName;
+    private Button BtnMapping;
+    private TextBox TxtFolderPath;
+    private Button BtnDevTool;
+    private TextBox TxtNavigate;
+    private Button BtnNavigate;
 }
