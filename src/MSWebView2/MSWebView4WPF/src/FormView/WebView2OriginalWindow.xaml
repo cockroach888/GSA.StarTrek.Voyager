@@ -59,6 +59,20 @@
             </Border>
         </DockPanel>
 
-        <Border BorderBrush="Silver" x:Name="MainContent"></Border>
+        <Grid>
+            <Border x:Name="MainContent" Grid.ColumnSpan="2"></Border>
+
+            <ListBox
+                x:Name="LstFileListView"
+                Grid.Column="2"
+                BorderBrush="Blue"
+                BorderThickness="1" />
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1045*" />
+                <ColumnDefinition Width="393*"/>
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+        </Grid>
     </DockPanel>
 </Window>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,18 @@ namespace MSWebView4WPF
         }
 
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            foreach (Window item in OwnedWindows)
+            {
+                item.Close();
+            }
+
+            base.OnClosing(e);
+        }
+
+
+
         private void WebView2OriginalExecuted(object target, ExecutedRoutedEventArgs e)
         {
             Window window = new FormView.WebView2OriginalWindow()
@@ -37,6 +50,18 @@ namespace MSWebView4WPF
                 ShowActivated = true,
                 ShowInTaskbar = false
             };
+            window.Owner = this;
+            window.Show();
+        }
+
+        private void WebView2FourImageExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+            Window window = new FormView.WebView2FourImageWindow()
+            {
+                ShowActivated = true,
+                ShowInTaskbar = false
+            };
+            window.Owner = this;
             window.Show();
         }
 
@@ -78,12 +103,17 @@ namespace MSWebView4WPF
 
                 foreach (string file in files)
                 {
+                    if (file.EndsWith("html"))
+                    {
+                        continue;
+                    }
+
                     ListViewItem item = new();
                     item.Content = System.IO.Path.GetFileName(file);
                     item.Tag = file;
                     item.Selected += (s, e) =>
                     {
-                        LoadImage($"{item.Tag}");
+                        LoadImage($"{((ListViewItem)e.Source).Tag}");
                     };
 
                     LstFileListView.Items.Add(item);
@@ -111,7 +141,7 @@ namespace MSWebView4WPF
 
             BitmapImage bitmap = new();
             bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            //bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.UriSource = new Uri(imageFilePath, UriKind.Absolute);
             bitmap.EndInit();
 

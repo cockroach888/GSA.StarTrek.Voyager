@@ -19,6 +19,7 @@
 
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static commands:FunctionFormsCommands.WebView2OriginalCommand}" Executed="WebView2OriginalExecuted" />
+        <CommandBinding Command="{x:Static commands:FunctionFormsCommands.WebView2FourImageCommand}" Executed="WebView2FourImageExecuted" />
 
         <CommandBinding Command="{x:Static commands:BasedCommands.FileBrowserCommand}" Executed="FileBrowserExecuted" />
         <CommandBinding Command="{x:Static commands:BasedCommands.FolderBrowserCommand}" Executed="FolderBrowserExecuted" />
@@ -35,8 +36,8 @@
                 materialDesign:ColorZoneAssist.Mode="Dark">
                 <StackPanel Orientation="Horizontal">
                     <Button Content="WebView2 原生加载" Command="{x:Static commands:FunctionFormsCommands.WebView2OriginalCommand}" />
-                    <!--<Button Margin="5 0 0 0" Content="Temp" />
-                <Button Margin="5 0 0 0" Content="Temp" />-->
+                    <Button Margin="5 0 0 0" Content="WebView2 四图像" Command="{x:Static commands:FunctionFormsCommands.WebView2FourImageCommand}" />
+                    <Button Margin="5 0 0 0" Content="Temp" />
                 </StackPanel>
             </GroupBox>
         </DockPanel>

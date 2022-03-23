@@ -2,6 +2,8 @@
 using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -173,6 +175,14 @@ namespace MSWebView4WPF.FormView
             }
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            _webView?.Dispose();
+
+            base.OnClosing(e);
+        }
+
+
 
         private void GoBackExecuted(object target, ExecutedRoutedEventArgs e)
         {
@@ -194,11 +204,15 @@ namespace MSWebView4WPF.FormView
 
         private void VirtualMappingExecuted(object target, ExecutedRoutedEventArgs e)
         {
+            LstFileListView.Items.Clear();
+
             if (_webView != null && _webView.CoreWebView2 != null)
             {
                 string hostName = TxtHostName.Text.Trim();
                 string folderPath = TxtFolderPath.Text.Trim();
                 _webView.CoreWebView2.SetVirtualHostNameToFolderMapping(hostName, folderPath, CoreWebView2HostResourceAccessKind.Allow);
+
+                FillFileListView(folderPath);
 
                 MessageBox.Show($"完成本地目录（{folderPath}）到虚拟主机（{hostName}）的映射。", "系统提示", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -209,6 +223,35 @@ namespace MSWebView4WPF.FormView
             if (_webView != null && _webView.CoreWebView2 != null)
             {
                 _webView.CoreWebView2.OpenDevToolsWindow();
+            }
+        }
+
+
+        private void FillFileListView(string folderPath)
+        {
+            LstFileListView.Items.Clear();
+
+            if (folderPath != null)
+            {
+                IEnumerable<string> files = Directory.EnumerateFiles(folderPath);
+
+                foreach (string file in files)
+                {
+                    ListViewItem item = new();
+                    item.Content = System.IO.Path.GetFileName(file);
+                    item.Tag = file;
+                    item.Selected += (s, e) =>
+                    {
+                        if (_webView != null && _webView.CoreWebView2 != null)
+                        {
+                            string urlString = $"https://{TxtHostName.Text.Trim()}/{((ListViewItem)e.Source).Content}";
+                            _webView.CoreWebView2.Navigate(urlString);
+                        }
+                    };
+
+                    LstFileListView.Items.Add(item);
+                }
+
             }
         }
     }
