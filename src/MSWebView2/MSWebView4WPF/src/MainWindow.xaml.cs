@@ -141,7 +141,7 @@ namespace MSWebView4WPF
 
             BitmapImage bitmap = new();
             bitmap.BeginInit();
-            //bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
             bitmap.UriSource = new Uri(imageFilePath, UriKind.Absolute);
             bitmap.EndInit();
 
