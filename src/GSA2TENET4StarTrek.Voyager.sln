@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MahAppsMetroUI", "MahAppsMe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahAppsMetroAppx", "MahAppsMetroUI\MahAppsMetroAppx\src\MahAppsMetroAppx.csproj", "{6F85FA05-9B52-4464-A9EA-7A23AEA16D6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSWebView2WPF4Appx1", "MSWebView2\MSWebView2WPF4Appx1\src\MSWebView2WPF4Appx1.csproj", "{A58B1D54-2123-46F2-86FE-B5EC9988C9B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{6F85FA05-9B52-4464-A9EA-7A23AEA16D6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F85FA05-9B52-4464-A9EA-7A23AEA16D6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F85FA05-9B52-4464-A9EA-7A23AEA16D6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A58B1D54-2123-46F2-86FE-B5EC9988C9B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A58B1D54-2123-46F2-86FE-B5EC9988C9B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A58B1D54-2123-46F2-86FE-B5EC9988C9B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A58B1D54-2123-46F2-86FE-B5EC9988C9B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{043E62AB-E7BE-49F7-83B7-4147C3819CD8} = {903086B6-4F64-466D-8CB8-B4A87D581C2A}
 		{01CDF98A-52D6-47B6-81C4-6DB109A80546} = {903086B6-4F64-466D-8CB8-B4A87D581C2A}
 		{6F85FA05-9B52-4464-A9EA-7A23AEA16D6F} = {9CA19B50-C7C6-461F-AC63-FA3E190E63B0}
+		{A58B1D54-2123-46F2-86FE-B5EC9988C9B0} = {903086B6-4F64-466D-8CB8-B4A87D581C2A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FE214A14-4DAD-47F5-BE0B-39414C73465A}

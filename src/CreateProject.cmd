@@ -77,6 +77,9 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView
 dotnet new wpf -lang C# -f net6.0 -n MSWebView4WPF -o MSWebView2\MSWebView4WPF\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView4WPF\src
 
+dotnet new wpf -lang C# -f net6.0 -n MSWebView2WPF4Appx1 -o MSWebView2\MSWebView2WPF4Appx1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView2WPF4Appx1\src
+
 
 
 
