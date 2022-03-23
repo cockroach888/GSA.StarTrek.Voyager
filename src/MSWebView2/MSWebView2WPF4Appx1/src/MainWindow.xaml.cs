@@ -80,47 +80,49 @@ namespace MSWebView2WPF4Appx1
                 _webView.Source = new Uri(@"about:blank");
 
 
-                // 禁用所有访问网络浏览器特定功能的加速器按键
+
+                // 禁用所有访问网络浏览器特定功能的加速器按键，允许则设置true。
                 _webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
 
-                // 禁止显示默认的上下文菜单
+                // 禁止显示默认的上下文菜单，允许则设置true。当想使用自定义菜单时，需要设置为true并添加自定义菜单项。
                 _webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
 
-                // 是否渲染默认的Javascript对话框，如alert,confirm,prompt,beforeunload等对话框。
+                // 是否渲染默认的Javascript对话框，如alert,confirm,prompt,beforeunload等对话框，允许则设置true。
                 _webView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = true;
 
-                // 禁止使用上下文菜单或键盘快捷键来打开DevTools窗口
+                // 禁止使用上下文菜单或键盘快捷键来打开DevTools窗口，允许则设置true。
                 _webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
 
-                // 禁止 web 内容访问主机对象
-                _webView.CoreWebView2.Settings.AreHostObjectsAllowed = false;
+                // 禁止 web 内容访问主机对象，允许则设置true。如果注册了C#对象为JS函数则必须为true才行。
+                _webView.CoreWebView2.Settings.AreHostObjectsAllowed = true;
 
-                // 是否禁用导航失败和渲染过程失败的内置错误页面，禁用将显示空白页。
+                // 是否禁用导航失败和渲染过程失败的内置错误页面，禁用将显示空白页，允许则设置true。
                 _webView.CoreWebView2.Settings.IsBuiltInErrorPageEnabled = true;
 
-                // 是否启用一般表格信息等内容信息的保存和自动填写
+                // 是否启用一般表格信息等内容信息的保存和自动填写，允许则设置true。
                 _webView.CoreWebView2.Settings.IsGeneralAutofillEnabled = true;
 
-                // 禁止自动保存密码信息
+                // 禁止自动保存密码信息，允许则设置true。
                 _webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = false;
 
-                // 禁止支持触摸输入的设备上使用捏动动作来缩放WebView2中的网页内容
+                // 禁止支持触摸输入的设备上使用捏动动作来缩放WebView2中的网页内容，允许则设置true。
                 _webView.CoreWebView2.Settings.IsPinchZoomEnabled = false;
 
-                // 是否允许运行 JavaScript 脚本，不影响ExecuteScriptAsync方法执行脚本。
+                // 是否允许运行 JavaScript 脚本，不影响ExecuteScriptAsync方法执行脚本，允许则设置true。
                 _webView.CoreWebView2.Settings.IsScriptEnabled = true;
 
-                // 是否显示状态栏
+                // 是否显示状态栏，允许则设置true。
                 _webView.CoreWebView2.Settings.IsStatusBarEnabled = false;
 
-                // 是否在支持触摸输入的设备上使用刷卡手势来浏览WebView2
+                // 是否在支持触摸输入的设备上使用刷卡手势来浏览WebView2，允许则设置true。
                 _webView.CoreWebView2.Settings.IsSwipeNavigationEnabled = false;
 
-                // 是否允许从主机到WebView的顶级HTML文档的通信
+                // 是否允许从主机到WebView的顶级HTML文档的通信，允许则设置true。
                 _webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
 
-                // 是否允许使用鼠标滚轮和键盘操作，来缩放WebView控件中的内容；不影响ZoomFactor属性。
+                // 是否允许使用鼠标滚轮和键盘操作，来缩放WebView控件中的内容；不影响ZoomFactor属性，允许则设置true。
                 _webView.CoreWebView2.Settings.IsZoomControlEnabled = true;
+
 
 
                 _webView.CoreWebView2.NewWindowRequested += (sender, e) =>
