@@ -96,6 +96,39 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MahAppsMetroUI MahAppsMetroUI\M
 
 
 
+@echo.
+@echo.
+@echo.
+@echo\&echo  ---------- MaterialDesignThemes ﹫ MaterialDesignUI 2 ----------
+
+dotnet new wpf -lang C# -f net6.0 -n MaterialDesignAppx -o MaterialDesignUI\MaterialDesignAppx\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MaterialDesignUI MaterialDesignUI\MaterialDesignAppx\src
+
+dotnet new wpf -lang C# -f net6.0 -n MaterialDesign4MahApps -o MaterialDesignUI\MaterialDesign4MahApps\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MaterialDesignUI MaterialDesignUI\MaterialDesign4MahApps\src
+
+
+
+
+
+@echo.
+@echo.
+@echo.
+@echo\&echo  ---------- NTreePackModule ﹫ NTreePackSDK 3 ----------
+
+dotnet new console -lang C# -f net6.0 -n NTreePackSDK4ServerCon1 -o NTreePackSDK\NTreePackSDK4ServerCon1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s NTreePackSDK NTreePackSDK\NTreePackSDK4ServerCon1\src
+
+dotnet new console -lang C# -f net6.0 -n NTreePackSDK4ClientCon1 -o NTreePackSDK\NTreePackSDK4ClientCon1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s NTreePackSDK NTreePackSDK\NTreePackSDK4ClientCon1\src
+
+dotnet new console -lang C# -f net6.0 -n NTreePackSDK4DecodeCon1 -o NTreePackSDK\NTreePackSDK4DecodeCon1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s NTreePackSDK NTreePackSDK\NTreePackSDK4DecodeCon1\src
+
+
+
+
+
 ::@echo\&echo 所有项目自动创建工作已结束，600 秒后将自动退出本自动创建程序。
 ::timeout /t 600
 
