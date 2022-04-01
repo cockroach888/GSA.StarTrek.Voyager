@@ -3,11 +3,17 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Client.Connecting;
+using MQTTnet.Client.Disconnecting;
+using MQTTnet.Client.Options;
+using MQTTnet.Client.Subscribing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,14 +32,18 @@ namespace MQTT2Appx4WPF1
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private WebView2? _webView;
-        private IMqttClient _mqttClient;
+        private readonly WebView2 _webView = new();
+        private readonly IMqttClientFactory _mqttFactory = new MqttFactory();
+        private readonly IMqttClient _mqttClient;
 
 
         public MainWindow()
         {
+            _mqttClient = _mqttFactory.CreateMqttClient();
+
             InitializeComponent();
         }
+
 
         #region WebView2 控件异步初始化事件
 
@@ -41,10 +51,8 @@ namespace MQTT2Appx4WPF1
         /// WebView2 控件异步初始化事件
         /// </summary>
         /// <returns>An object that represents the current operation.</returns>
-        private async Task InitializeAsync()
+        private async Task InitializeWebView2Async()
         {
-            _webView = new WebView2();
-
             // WebView2 环境变量相关配置
             string webViewFolder = System.IO.Path.GetFullPath("D:/data/WebView2Fixed");
             string userDataFolder = System.IO.Path.GetFullPath("D:/data/WebView2Fixed/UserData");
@@ -166,6 +174,52 @@ namespace MQTT2Appx4WPF1
 
         #endregion
 
+        #region MQTTnet 客户端异步初始化事件
+
+        /// <summary>
+        /// MQTTnet 客户端异步初始化事件
+        /// </summary>
+        private async Task InitializeMQTTnetAsync()
+        {
+            //MQTTnet.Diagnostics.Logger.IMqttNetLogger logger = new MQTTnet.Diagnostics.Logger.MqttNetEventLogger();
+
+            _mqttClient.UseApplicationMessageReceivedHandler((e) =>
+            {
+                return Task.Run(() =>
+                {
+                    Trace.TraceInformation($"Client Id: {e.ClientId}");
+                    Trace.TraceInformation($"Payload: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
+                });
+            });
+
+            _mqttClient.UseConnectedHandler((e) =>
+            {
+                return Task.Run(() =>
+                {
+                    Trace.TraceInformation($"Client Id: {e.ConnectResult.ResultCode}");
+                });
+            });
+
+            IMqttClientOptions options = new MqttClientOptionsBuilder()
+                .WithTcpServer("127.0.0.1")
+                .WithUserProperty("test", "test")
+                .Build();
+
+            MqttClientConnectResult response = await _mqttClient.ConnectAsync(options, CancellationToken.None).ConfigureAwait(false);
+            //response.DumpToConsole();
+
+            Trace.TraceInformation($"ResponseInformation: {response.AssignedClientIdentifier}");
+
+
+            MqttClientSubscribeOptions mqttSubscribeOptions = new MqttClientSubscribeOptionsBuilder()
+               .WithTopicFilter(f => { f.WithTopic("testtopic/#"); })
+               .Build();
+
+            await _mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
+        }
+
+        #endregion
+
         /// <summary>
         /// 窗体初始化响应事件
         /// </summary>
@@ -176,7 +230,7 @@ namespace MQTT2Appx4WPF1
 
             try
             {
-                await InitializeAsync().ConfigureAwait(false);
+                await InitializeWebView2Async().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -188,35 +242,17 @@ namespace MQTT2Appx4WPF1
         /// 窗体内容渲染响应事件
         /// </summary>
         /// <param name="e">传递事件</param>
-        protected override void OnContentRendered(EventArgs e)
+        protected override async void OnContentRendered(EventArgs e)
         {
             base.OnContentRendered(e);
 
-
-
-            var mqttFactory = new MqttFactory();
-            _mqttClient = mqttFactory.CreateMqttClient();
-
-
-            using (_mqttClient = mqttFactory.CreateMqttClient())
+            try
             {
-                // Use builder classes where possible in this project.
-                var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer("broker.hivemq.com").Build();
-
-                // This will throw an exception if the server is not available.
-                // The result from this message returns additional data which was sent 
-                // from the server. Please refer to the MQTT protocol specification for details.
-                var response = await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-                Console.WriteLine("The MQTT client is connected.");
-
-                response.DumpToConsole();
-
-                // Send a clean disconnect to the server by calling _DisconnectAsync_. Without this the TCP connection
-                // gets dropped and the server will handle this as a non clean disconnect (see MQTT spec for details).
-                var mqttClientDisconnectOptions = mqttFactory.CreateClientDisconnectOptionsBuilder().Build();
-
-                await mqttClient.DisconnectAsync(mqttClientDisconnectOptions, CancellationToken.None);
+                await InitializeMQTTnetAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "系统提示", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -224,11 +260,13 @@ namespace MQTT2Appx4WPF1
         /// 窗体关闭响应事件
         /// </summary>
         /// <param name="e">传递事件</param>
-        protected override void OnClosing(CancelEventArgs e)
+        protected override async void OnClosing(CancelEventArgs e)
         {
-            _webView?.Dispose();
-
             base.OnClosing(e);
+
+            _webView.Dispose();
+
+            await _mqttClient.DisconnectAsync(new MqttClientDisconnectOptions(), CancellationToken.None).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -241,7 +279,7 @@ namespace MQTT2Appx4WPF1
 
             if (e.Key == Key.F9)
             {
-                _webView?.CoreWebView2.OpenDevToolsWindow();
+                _webView.CoreWebView2.OpenDevToolsWindow();
             }
         }
     }
