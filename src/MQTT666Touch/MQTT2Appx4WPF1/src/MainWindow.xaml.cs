@@ -24,6 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace MQTT2Appx4WPF1
 {
@@ -89,7 +90,7 @@ namespace MQTT2Appx4WPF1
                 await _webView.EnsureCoreWebView2Async(envRuntime);
 
                 // 设置 WebView2 起始加载页面
-                _webView.Source = new Uri(@"https://news.baidu.com");
+                _webView.Source = new Uri(@"https://sightx.com/index.html");
 
 
 
@@ -167,6 +168,11 @@ namespace MQTT2Appx4WPF1
                 {
                     // do something.
                 };
+
+
+                // 注册虚拟主机目录映射
+                string virtualPath = System.IO.Path.GetFullPath("../../../../../wwwroot/");
+                _webView.CoreWebView2.SetVirtualHostNameToFolderMapping("sightx.com", virtualPath, CoreWebView2HostResourceAccessKind.Allow);
             };
 
             MainContent.Child = _webView;
@@ -183,16 +189,9 @@ namespace MQTT2Appx4WPF1
         {
             //MQTTnet.Diagnostics.Logger.IMqttNetLogger logger = new MQTTnet.Diagnostics.Logger.MqttNetEventLogger();
 
-            _mqttClient.UseApplicationMessageReceivedHandler((e) =>
-            {
-                return Task.Run(() =>
-                {
-                    Trace.TraceInformation($"Client Id: {e.ClientId}");
-                    Trace.TraceInformation($"Payload: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-                });
-            });
+            _mqttClient.UseApplicationMessageReceivedHandler(MessageReceivedCallback);
 
-            _mqttClient.UseConnectedHandler((e) =>
+            _mqttClient.UseConnectedHandler(e =>
             {
                 return Task.Run(() =>
                 {
@@ -200,14 +199,14 @@ namespace MQTT2Appx4WPF1
                 });
             });
 
+
             IMqttClientOptions options = new MqttClientOptionsBuilder()
                 .WithTcpServer("127.0.0.1")
-                .WithUserProperty("test", "test")
+                .WithClientId($"ClientWPF1")
+                .WithCredentials("test", "test")
                 .Build();
 
             MqttClientConnectResult response = await _mqttClient.ConnectAsync(options, CancellationToken.None).ConfigureAwait(false);
-            //response.DumpToConsole();
-
             Trace.TraceInformation($"ResponseInformation: {response.AssignedClientIdentifier}");
 
 
@@ -216,6 +215,23 @@ namespace MQTT2Appx4WPF1
                .Build();
 
             await _mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
+        }
+
+        private Task MessageReceivedCallback(MqttApplicationMessageReceivedEventArgs e)
+        {
+            return Task.Run(async () =>
+            {
+                string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+
+                await Dispatcher.BeginInvoke(new Action<string>((msg) =>
+                {
+                    _webView.CoreWebView2.PostWebMessageAsJson(msg);
+                }), DispatcherPriority.Background, message);
+
+                Trace.TraceInformation($"Client Id: {e.ClientId}");
+                Trace.TraceInformation($"Topic: {e.ApplicationMessage.Topic}");
+                Trace.TraceInformation($"Payload: {message}");
+            });
         }
 
         #endregion
@@ -277,9 +293,15 @@ namespace MQTT2Appx4WPF1
         {
             base.OnKeyUp(e);
 
-            if (e.Key == Key.F9)
+            switch (e.Key)
             {
-                _webView.CoreWebView2.OpenDevToolsWindow();
+                case Key.F9:
+                    _webView.CoreWebView2.OpenDevToolsWindow();
+                    break;
+                case Key.F5:
+                    _webView.CoreWebView2.Reload();
+                    break;
+                default: break;
             }
         }
     }
