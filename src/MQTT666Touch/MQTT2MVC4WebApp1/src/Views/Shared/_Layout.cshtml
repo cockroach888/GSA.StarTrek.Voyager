@@ -50,20 +50,13 @@
         </div>
     </footer>
 
-    <script type="text/javascript" src="~/plugins/jquery/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="~/plugins/jquery/jquery.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="~/plugins/bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="~/assets/js/wenque-all.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         $(function () {
             console.log('WenQue version: ',WenQue.version);
-
-            window.chrome.webview.addEventListener('message', event => MessageCallback(event.data));
         });
-
-        function MessageCallback(data){
-            console.log(data.msg)
-            $('#MsgInfo').append('<p>'+data.msg+'</p>');
-        }
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
