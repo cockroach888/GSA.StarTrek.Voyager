@@ -45,7 +45,8 @@ namespace MQTT2MVC4WebApp1.Internal
 
                  _logger.LogInformation("订阅主题。");
                  MqttClientSubscribeOptions mqttSubscribeOptions = _mqttFactory.CreateSubscribeOptionsBuilder()
-                                                                               .WithTopicFilter(f => { f.WithTopic("testtopic/#"); })
+                                                                               .WithTopicFilter(p => { p.WithTopic("testtopic/#"); })
+                                                                               .WithTopicFilter(p => { p.WithTopic("deivce/+/checkItems"); })
                                                                                .Build();
 
                  await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
@@ -95,11 +96,9 @@ namespace MQTT2MVC4WebApp1.Internal
                     _logger.LogError(ex, ex.Message);
                     _logger.LogDebug("服务端连接时出现未知错误，请检查连接参数，或呼叫管理员。");
                 }
-                finally
-                {
-                    _logger.LogDebug("程序将在5秒后尝试重新连接服务端。");
-                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken).ConfigureAwait(false);
-                }
+
+                _logger.LogDebug("程序将在5秒后尝试重新连接服务端。");
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken).ConfigureAwait(false);
             }
 
 
@@ -109,8 +108,8 @@ namespace MQTT2MVC4WebApp1.Internal
                 MqttApplicationMessage message = _messageQueue.Take(stoppingToken);
 
                 string strMessage = Encoding.UTF8.GetString(message.Payload);
-                _logger.LogDebug($"Topic: {message.Topic}");
-                _logger.LogDebug($"Payload: {strMessage}");
+                //_logger.LogDebug($"Topic: {message.Topic}");
+                //_logger.LogDebug($"Payload: {strMessage}");
 
                 await _mqttHub.Clients.All.ReceiveMessage(message.Topic, strMessage).ConfigureAwait(false);
             }
