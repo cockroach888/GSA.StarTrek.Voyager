@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using MQTT2MVC4WebApp1.Hubs;
+using MQTT2MVC4WebApp1.Models;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Diagnostics;
 using MQTTnet.Exceptions;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Text.Json;
+using TDengineDriver;
 
 namespace MQTT2MVC4WebApp1.Internal
 {
@@ -18,6 +21,8 @@ namespace MQTT2MVC4WebApp1.Internal
         private MqttClientOptions? _clientOptions;
         private readonly MqttClient _mqttClient;
 
+        private readonly IntPtr _connection;
+
 
         public MQTTClientHostedServer(ILogger<MQTTClientHostedServer> logger, IHubContext<MQTTServiceHub, IMQTTServiceClient> mqttHub)
         {
@@ -28,6 +33,8 @@ namespace MQTT2MVC4WebApp1.Internal
             IMqttNetLogger mqttLogger = new MqttNetEventLogger();
             _mqttFactory = new MqttFactory(mqttLogger);
             _mqttClient = _mqttFactory.CreateMqttClient();
+
+            _connection = TDengine.Connect("192.168.16.221", "root", "taosdata", "EdgeDetectionDB", 0);
         }
 
 
@@ -73,6 +80,9 @@ namespace MQTT2MVC4WebApp1.Internal
 
             using (_messageQueue) { };
 
+            _ = TDengine.Close(_connection);
+            TDengine.Cleanup();
+
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -108,10 +118,8 @@ namespace MQTT2MVC4WebApp1.Internal
                 MqttApplicationMessage message = _messageQueue.Take(stoppingToken);
 
                 string strMessage = Encoding.UTF8.GetString(message.Payload);
-                //_logger.LogDebug($"Topic: {message.Topic}");
-                //_logger.LogDebug($"Payload: {strMessage}");
-
                 await _mqttHub.Clients.All.ReceiveMessage(message.Topic, strMessage).ConfigureAwait(false);
+                await SaveMessageAsync(message).ConfigureAwait(false);
             }
         }
 
@@ -121,6 +129,48 @@ namespace MQTT2MVC4WebApp1.Internal
             return Task.Run(() =>
             {
                 _messageQueue.Add(e.ApplicationMessage);
+            });
+        }
+
+        private Task SaveMessageAsync(MqttApplicationMessage message)
+        {
+            return Task.Run(() =>
+            {
+                CheckItemsModel? info = JsonSerializer.Deserialize<CheckItemsModel>(message.Payload);
+
+                StringBuilder sqlString = new();
+                sqlString.Append($"insert into {info!.DeviceId} using check_items tags (9569, {info.ModelId}, '202109130183', 'X光液位检测机三楼', '缺陷1|缺陷2|缺陷3') values (");
+                sqlString.Append($"'{info.TimestampKey:yyyy-MM-dd HH:mm:ss.fff}',"); // ts timestamp
+                sqlString.Append($"{info.ProductId},"); // product_id int
+                sqlString.Append($"{info.GoodResult},"); // good_result int
+                sqlString.Append($"{info.BadResult},"); // bad_result int
+                sqlString.Append($"{info.ExceptionResult},"); // exception_result int
+                sqlString.Append($"'{info.Note}',"); // note nchar(1000)
+                sqlString.Append($"'{info.SavePath}',"); // save_path nchar(200)
+                sqlString.Append($"{info.Data1},"); // d1 int
+                sqlString.Append($"{info.Data2},"); // d2 int
+                sqlString.Append($"{info.Data3},"); // d3 int
+                sqlString.Append($"{info.Data4},"); // d4 int
+                sqlString.Append($"{info.Data5},"); // d5 int
+                sqlString.Append($"{info.Data6},"); // d6 int
+                sqlString.Append($"{info.Data7},"); // d7 int
+                sqlString.Append($"{info.Data8},"); // d8 int
+                sqlString.Append($"{info.Data9},"); // d9 int
+                sqlString.Append($"{info.Data10},"); // d10 int
+                sqlString.Append($"{info.Data11},"); // d11 int
+                sqlString.Append($"{info.Data12},"); // d12 int
+                sqlString.Append($"{info.Data13},"); // d13 int
+                sqlString.Append($"{info.Data14},"); // d14 int
+                sqlString.Append($"{info.Data15},"); // d15 int
+                sqlString.Append($"{info.Data16},"); // d16 int
+                sqlString.Append($"{info.Data17},"); // d17 int
+                sqlString.Append($"{info.Data18},"); // d18 int
+                sqlString.Append($"{info.Data19},"); // d19 int
+                sqlString.Append($"{info.Data20}"); // d20 int
+                sqlString.Append(");");
+
+                IntPtr result = TDengine.Query(_connection, sqlString.ToString());
+                TDengine.FreeResult(result);
             });
         }
     }

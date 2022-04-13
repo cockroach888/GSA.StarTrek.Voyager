@@ -39,7 +39,7 @@ async function startMock() {
       mockTopic = "deivce/"  + client.options.clientId  + "/checkItems";
       client.publish(mockTopic, JSON.stringify(data))
     }
-    const dateStr = new Date(ts).toLocaleTimeString()
+    const dateStr = new Date(ts).toLocaleString()
     console.log(`${dateStr} send success.`)
     await sleep(AWAIT)
   }
