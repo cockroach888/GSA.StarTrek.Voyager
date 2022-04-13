@@ -1,5 +1,5 @@
 @echo off
-@title è‡ªåŠ¨åˆ›å»ºè§£å†³æ–¹æ¡ˆåŠå„éš¶å±žé¡¹ç›®
+@title ×Ô¶¯´´½¨½â¾ö·½°¸¼°¸÷Á¥ÊôÏîÄ¿
 
 set basedir="%~dp0"
 set basedir
@@ -10,7 +10,7 @@ cd /d %basedir%
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- è§£å†³æ–¹æ¡ˆ ----------
+@echo\&echo  ---------- ½â¾ö·½°¸ ----------
 
 dotnet new sln -n GSA2TENET4StarTrek.Voyager
 
@@ -21,7 +21,7 @@ dotnet new sln -n GSA2TENET4StarTrek.Voyager
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- é«˜æ€§èƒ½gRPCæ¡†æž¶ ï¹« gPRCTouch 3 ----------
+@echo\&echo  ---------- ¸ßÐÔÄÜgRPC¿ò¼Ü ©ˆ gPRCTouch 3 ----------
 
 dotnet new web -lang C# -f net6.0 -n gPRC4AspNetCore -o gPRCTouch\gPRC4AspNetCore\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s gPRCTouch gPRCTouch\gPRC4AspNetCore\src
@@ -39,7 +39,7 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s gPRCTouch gPRCTouch\gPRC4Client
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- é«˜æ€§èƒ½ç½‘ç»œé€šä¿¡æ¡†æž¶ ï¹« HP-Socket 2 ----------
+@echo\&echo  ---------- ¸ßÐÔÄÜÍøÂçÍ¨ÐÅ¿ò¼Ü ©ˆ HP-Socket 2 ----------
 
 dotnet new console -lang C# -f net6.0 -n HPSocket4ServerConsole1 -o HPSocket\HPSocket4ServerConsole1\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s HPSocket HPSocket\HPSocket4ServerConsole1\src
@@ -54,7 +54,7 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s HPSocket HPSocket\HPSocket4Clie
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- è½»é‡çº§è·¨å¹³å°æœåŠ¡å™¨ç¨‹åºæ¡†æž¶ ï¹« SuperSocketFrame 2 ----------
+@echo\&echo  ---------- ÇáÁ¿¼¶¿çÆ½Ì¨·þÎñÆ÷³ÌÐò¿ò¼Ü ©ˆ SuperSocketFrame 2 ----------
 
 dotnet new console -lang C# -f net6.0 -n SuperSocket4ServerConsole1 -o SuperSocketFrame\SuperSocket4ServerConsole1\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s SuperSocketFrame SuperSocketFrame\SuperSocket4ServerConsole1\src
@@ -69,7 +69,7 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s SuperSocketFrame SuperSocketFra
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- Microsoft Edge WebView2 ï¹« MSWebView2 2 ----------
+@echo\&echo  ---------- Microsoft Edge WebView2 ©ˆ MSWebView2 2 ----------
 
 dotnet new winforms -lang C# -f net6.0 -n MSWebView4WinForm -o MSWebView2\MSWebView4WinForm\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView4WinForm\src
@@ -87,7 +87,7 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MSWebView2 MSWebView2\MSWebView
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- MahApps.Metro ï¹« MahAppsMetroUI 1 ----------
+@echo\&echo  ---------- MahApps.Metro ©ˆ MahAppsMetroUI 1 ----------
 
 dotnet new wpf -lang C# -f net6.0 -n MahAppsMetroAppx -o MahAppsMetroUI\MahAppsMetroAppx\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MahAppsMetroUI MahAppsMetroUI\MahAppsMetroAppx\src
@@ -99,7 +99,7 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MahAppsMetroUI MahAppsMetroUI\M
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- MaterialDesignThemes ï¹« MaterialDesignUI 2 ----------
+@echo\&echo  ---------- MaterialDesignThemes ©ˆ MaterialDesignUI 2 ----------
 
 dotnet new wpf -lang C# -f net6.0 -n MaterialDesignAppx -o MaterialDesignUI\MaterialDesignAppx\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MaterialDesignUI MaterialDesignUI\MaterialDesignAppx\src
@@ -114,7 +114,7 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MaterialDesignUI MaterialDesign
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- NTreePackModule ï¹« NTreePackSDK 3 ----------
+@echo\&echo  ---------- NTreePackModule ©ˆ NTreePackSDK 3 ----------
 
 dotnet new console -lang C# -f net6.0 -n NTreePackSDK4ServerCon1 -o NTreePackSDK\NTreePackSDK4ServerCon1\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s NTreePackSDK NTreePackSDK\NTreePackSDK4ServerCon1\src
@@ -132,7 +132,7 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s NTreePackSDK NTreePackSDK\NTree
 @echo.
 @echo.
 @echo.
-@echo\&echo  ---------- MQTT Hands-on Applications ï¹« MQTT666Touch 5 ----------
+@echo\&echo  ---------- MQTT Hands-on Applications ©ˆ MQTT666Touch 5 ----------
 
 dotnet new wpf -lang C# -f net6.0 -n MQTT2Appx4WPF1 -o MQTT666Touch\MQTT2Appx4WPF1\src
 dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MQTT666Touch MQTT666Touch\MQTT2Appx4WPF1\src
@@ -153,7 +153,22 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MQTT666Touch MQTT666Touch\MQTT2
 
 
 
-::@echo\&echo æ‰€æœ‰é¡¹ç›®è‡ªåŠ¨åˆ›å»ºå·¥ä½œå·²ç»“æŸï¼Œ600 ç§’åŽå°†è‡ªåŠ¨é€€å‡ºæœ¬è‡ªåŠ¨åˆ›å»ºç¨‹åºã€‚
+@echo.
+@echo.
+@echo.
+@echo\&echo  ---------- TDengine Ê±¼äÐòÁÐÊý¾Ý¿â ©ˆ TDengineTouch 1 ----------
+
+dotnet new wpf -lang C# -f net6.0 -n TDengine4Appx1 -o TDengineTouch\TDengine4Appx1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s TDengineTouch TDengineTouch\TDengine4Appx1\src
+
+dotnet new console -lang C# -f net6.0 -n TDengine4Con1 -o TDengineTouch\TDengine4Con1\src
+dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s TDengineTouch TDengineTouch\TDengine4Con1\src
+
+
+
+
+
+::@echo\&echo ËùÓÐÏîÄ¿×Ô¶¯´´½¨¹¤×÷ÒÑ½áÊø£¬600 Ãëºó½«×Ô¶¯ÍË³ö±¾×Ô¶¯´´½¨³ÌÐò¡£
 ::timeout /t 600
 
 @echo.
@@ -161,6 +176,6 @@ dotnet sln GSA2TENET4StarTrek.Voyager.sln add -s MQTT666Touch MQTT666Touch\MQTT2
 @echo.
 @echo.
 @echo.
-@echo\&echo æ‰€æœ‰é¡¹ç›®è‡ªåŠ¨åˆ›å»ºå®Œæ¯•ï¼Œè¯·æŒ‰ä»»æ„é”®é€€å‡ºã€‚
+@echo\&echo ËùÓÐÏîÄ¿×Ô¶¯´´½¨Íê±Ï£¬Çë°´ÈÎÒâ¼üÍË³ö¡£
 pause>nul 
 exit
