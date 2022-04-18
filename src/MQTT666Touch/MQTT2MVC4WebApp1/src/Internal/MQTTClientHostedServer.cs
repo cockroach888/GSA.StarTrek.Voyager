@@ -16,6 +16,7 @@ namespace MQTT2MVC4WebApp1.Internal
     {
         private readonly BlockingCollection<MqttApplicationMessage> _messageQueue = new();
         private readonly ILogger<MQTTClientHostedServer> _logger;
+        private readonly IConfiguration _config;
         private readonly IHubContext<MQTTServiceHub, IMQTTServiceClient> _mqttHub;
         private readonly MqttFactory _mqttFactory;
         private MqttClientOptions? _clientOptions;
@@ -24,9 +25,10 @@ namespace MQTT2MVC4WebApp1.Internal
         private readonly IntPtr _connection;
 
 
-        public MQTTClientHostedServer(ILogger<MQTTClientHostedServer> logger, IHubContext<MQTTServiceHub, IMQTTServiceClient> mqttHub)
+        public MQTTClientHostedServer(ILogger<MQTTClientHostedServer> logger, IConfiguration config, IHubContext<MQTTServiceHub, IMQTTServiceClient> mqttHub)
         {
             _logger = logger;
+            _config = config;
             _mqttHub = mqttHub;
 
             _logger.LogDebug("实例化MQTT创建工厂和客户端对象。");
@@ -59,12 +61,11 @@ namespace MQTT2MVC4WebApp1.Internal
                  await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
              };
 
-
             _logger.LogInformation("构建服务端连接参数信息。");
             _clientOptions = _mqttFactory.CreateClientOptionsBuilder()
                                          //.WithTcpServer("127.0.0.1")
                                          .WithTcpServer("192.168.16.221")
-                                         .WithClientId($"ClientWPF1")
+                                         .WithClientId($"AspDotNetCoreClient")
                                          .WithCredentials("test", "test")
                                          .Build();
 

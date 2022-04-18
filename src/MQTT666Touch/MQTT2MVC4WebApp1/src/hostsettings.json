@@ -1,0 +1,6 @@
+{
+  //"applicationName": "应用程序名称"
+  "environment": "Development"
+  //"environment": "Production"
+  //"contentRoot": "应用程序内容根目录"
+}
