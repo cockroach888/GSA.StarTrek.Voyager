@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using MQTT2MVC4WebApp1.Hubs;
 using MQTT2MVC4WebApp1.Models;
+using MQTT2MVC4WebApp1.Services;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Diagnostics;
@@ -21,15 +22,21 @@ namespace MQTT2MVC4WebApp1.Internal
         private readonly MqttFactory _mqttFactory;
         private MqttClientOptions? _clientOptions;
         private readonly MqttClient _mqttClient;
+        private readonly MessageDespatchService _despatchService;
 
         private readonly IntPtr _connection;
 
 
-        public MQTTClientHostedServer(ILogger<MQTTClientHostedServer> logger, IConfiguration config, IHubContext<MQTTServiceHub, IMQTTServiceClient> mqttHub)
+        public MQTTClientHostedServer(ILogger<MQTTClientHostedServer> logger,
+                                      IConfiguration config,
+                                      IHubContext<MQTTServiceHub,
+                                      IMQTTServiceClient> mqttHub,
+                                      MessageDespatchService messageDespatchService)
         {
             _logger = logger;
             _config = config;
             _mqttHub = mqttHub;
+            _despatchService = messageDespatchService;
 
             _logger.LogDebug("实例化MQTT创建工厂和客户端对象。");
             IMqttNetLogger mqttLogger = new MqttNetEventLogger();
@@ -42,6 +49,9 @@ namespace MQTT2MVC4WebApp1.Internal
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            _despatchService.MessageDespatch += ReceiveMessageAsync;
+
+
             _logger.LogInformation("注册消息接收回调事件。");
             _mqttClient.ApplicationMessageReceivedAsync += MessageReceivedCallback;
 
@@ -75,6 +85,9 @@ namespace MQTT2MVC4WebApp1.Internal
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
+            _despatchService.MessageDespatch -= ReceiveMessageAsync;
+
+
             MqttClientDisconnectOptions options = _mqttFactory.CreateClientDisconnectOptionsBuilder().Build();
             await _mqttClient.DisconnectAsync(options, cancellationToken).ConfigureAwait(false);
             _mqttClient.Dispose();
@@ -121,6 +134,7 @@ namespace MQTT2MVC4WebApp1.Internal
                 string strMessage = Encoding.UTF8.GetString(message.Payload);
                 await _mqttHub.Clients.All.ReceiveMessage(message.Topic, strMessage).ConfigureAwait(false);
                 await SaveMessageAsync(message).ConfigureAwait(false);
+
             }
         }
 
@@ -173,6 +187,20 @@ namespace MQTT2MVC4WebApp1.Internal
                 IntPtr result = TDengine.Query(_connection, sqlString.ToString());
                 TDengine.FreeResult(result);
             });
+        }
+
+        private async Task ReceiveMessageAsync(string topic, string message)
+        {
+            var applicationMessage = new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                .WithPayload(message)
+                .Build();
+
+            _logger.LogInformation($"收到来自网页的消息发布：{topic} - {message}");
+
+            await _mqttClient.PublishAsync(applicationMessage, CancellationToken.None).ConfigureAwait(false);
+
+            _logger.LogInformation($"来自网页的消息发布成功。");
         }
     }
 }

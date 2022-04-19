@@ -1,9 +1,27 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using MQTT2MVC4WebApp1.Services;
 
 namespace MQTT2MVC4WebApp1.Hubs;
 
+/// <summary>
+/// 
+/// </summary>
 internal class MQTTServiceHub : Hub<IMQTTServiceClient>
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    private readonly MessageDespatchService _despatchService;
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="messageDespatchService"></param>
+    public MQTTServiceHub(MessageDespatchService messageDespatchService)
+        => _despatchService = messageDespatchService;
+
+
     /// <summary>
     /// 发送消息到所有客户端
     /// </summary>
@@ -11,7 +29,8 @@ internal class MQTTServiceHub : Hub<IMQTTServiceClient>
     /// <param name="message">消息内容</param>
     /// <returns>Task</returns>
     public async Task SendMessage(string topic, string message)
-        => await Clients.All.ReceiveMessage(topic, message);
+        => await _despatchService.NotifyMessageDespatchAsync(topic, message).ConfigureAwait(false);
+    //await Clients.All.ReceiveMessage(topic, message);
 
     /// <summary>
     /// 发送消息到所有客户端
@@ -21,7 +40,7 @@ internal class MQTTServiceHub : Hub<IMQTTServiceClient>
     /// <param name="message">消息内容</param>
     /// <returns>Task</returns>
     public async Task SendMessageToCaller(string topic, string message)
-        => await Clients.Caller.ReceiveMessage(topic, message);
+        => await Clients.Caller.ReceiveMessage(topic, message).ConfigureAwait(false);
 
     /// <summary>
     /// 发送消息到所有客户端
@@ -31,5 +50,5 @@ internal class MQTTServiceHub : Hub<IMQTTServiceClient>
     /// <param name="message">消息内容</param>
     /// <returns>Task</returns>
     public async Task SendMessageToGroup(string topic, string message)
-        => await Clients.Group("SignalR Users").ReceiveMessage(topic, message);
+        => await Clients.Group("SignalR Users").ReceiveMessage(topic, message).ConfigureAwait(false);
 }
