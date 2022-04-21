@@ -17,7 +17,7 @@ namespace MQTT2MVC4WebApp1.Internal
 
     internal class MQTTClientHostedServer : BackgroundService
     {
-        private const int _maxParallelNumber = 20;
+        private const int _maxParallelNumber = 100;
 
         private IntPtr[] _connections = new IntPtr[_maxParallelNumber];
 
@@ -37,6 +37,8 @@ namespace MQTT2MVC4WebApp1.Internal
                                       IMQTTServiceClient> mqttHub,
                                       MessageDespatchService messageDespatchService)
         {
+            //TDengine.Options((int)TDengineInitOption.TDDB_OPTION_CONFIGDIR, ".");
+
             for (int i = 0; i < _maxParallelNumber; i++)
             {
                 _connections[i] = TDengine.Connect("192.168.16.221", "root", "taosdata", "EdgeDetectionDB", 0);
@@ -155,11 +157,11 @@ namespace MQTT2MVC4WebApp1.Internal
                     if (message != null && message.Payload != null && message.Payload.Length > 0)
                     {
                         string strMessage = Encoding.UTF8.GetString(message.Payload);
-                        _ = _mqttHub.Clients.All.ReceiveMessage(message.Topic, strMessage).ConfigureAwait(false);
+                        await _mqttHub.Clients.All.ReceiveMessage(message.Topic, strMessage).ConfigureAwait(false);
                         await SaveMessageAsync(_connections[i], message).ConfigureAwait(false);
                     }
                 });
-                await Task.Delay(0).ConfigureAwait(false);
+                await Task.Delay(0, stoppingToken).ConfigureAwait(false);
             }
         }
 
