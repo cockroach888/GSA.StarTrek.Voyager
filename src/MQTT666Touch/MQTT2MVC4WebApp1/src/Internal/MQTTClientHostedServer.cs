@@ -13,9 +13,17 @@ using TDengineDriver;
 
 namespace MQTT2MVC4WebApp1.Internal
 {
+    using MqttMessageQueue = BlockingCollection<MqttApplicationMessage>;
+
     internal class MQTTClientHostedServer : BackgroundService
     {
-        private readonly BlockingCollection<MqttApplicationMessage> _messageQueue = new();
+        //private const int _maxQueueNumber = 100;
+        private const int _maxParallelNumber = 20;
+
+        private IntPtr[] _connections = new IntPtr[_maxParallelNumber];
+
+        //private readonly MqttMessageQueue[] _messageQueue = new MqttMessageQueue[10];
+        private readonly MqttMessageQueue _messageQueue = new();
         private readonly ILogger<MQTTClientHostedServer> _logger;
         private readonly IConfiguration _config;
         private readonly IHubContext<MQTTServiceHub, IMQTTServiceClient> _mqttHub;
@@ -23,9 +31,7 @@ namespace MQTT2MVC4WebApp1.Internal
         private MqttClientOptions? _clientOptions;
         private readonly MqttClient _mqttClient;
         private readonly MessageDespatchService _despatchService;
-
-        private readonly IntPtr _connection;
-
+        
 
         public MQTTClientHostedServer(ILogger<MQTTClientHostedServer> logger,
                                       IConfiguration config,
@@ -33,6 +39,16 @@ namespace MQTT2MVC4WebApp1.Internal
                                       IMQTTServiceClient> mqttHub,
                                       MessageDespatchService messageDespatchService)
         {
+            for (int i = 0; i < _maxParallelNumber; i++)
+            {
+                _connections[i] = TDengine.Connect("192.168.16.221", "root", "taosdata", "EdgeDetectionDB", 0);
+            }
+
+            //for (int i = 0; i < _messageQueue.Length; i++)
+            //{
+            //    _messageQueue[i] = new MqttMessageQueue(_maxQueueNumber);
+            //}
+
             _logger = logger;
             _config = config;
             _mqttHub = mqttHub;
@@ -42,8 +58,6 @@ namespace MQTT2MVC4WebApp1.Internal
             IMqttNetLogger mqttLogger = new MqttNetEventLogger();
             _mqttFactory = new MqttFactory(mqttLogger);
             _mqttClient = _mqttFactory.CreateMqttClient();
-
-            _connection = TDengine.Connect("192.168.16.221", "root", "taosdata", "EdgeDetectionDB", 0);
         }
 
 
@@ -71,6 +85,16 @@ namespace MQTT2MVC4WebApp1.Internal
                  await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
              };
 
+            _mqttClient.DisconnectedAsync += (e) =>
+            {
+                _logger.LogDebug($"MQTT 连接中断。");
+                _logger.LogDebug($"ResultCode: {e.ConnectResult.ResultCode}");
+                _logger.LogDebug($"ReasonString: {e.ReasonString}");
+                _logger.LogError(e.Exception, e.Exception.Message);
+                return Task.CompletedTask;
+            };
+
+
             _logger.LogInformation("构建服务端连接参数信息。");
             _clientOptions = _mqttFactory.CreateClientOptionsBuilder()
                                          //.WithTcpServer("127.0.0.1")
@@ -93,9 +117,17 @@ namespace MQTT2MVC4WebApp1.Internal
             _mqttClient.Dispose();
 
             using (_messageQueue) { };
+            //foreach (MqttMessageQueue message in _messageQueue)
+            //{
+            //    using (message) { }
+            //}
 
-            _ = TDengine.Close(_connection);
-            TDengine.Cleanup();
+            // 释放所有连接
+            //foreach (IntPtr conn in _connections)
+            //{
+            //    _ = TDengine.Close(conn);
+            //    TDengine.Cleanup();
+            //}
 
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -128,33 +160,38 @@ namespace MQTT2MVC4WebApp1.Internal
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                //_messageQueue.TryTake(out MqttApplicationMessage message, -1, stoppingToken);
-                MqttApplicationMessage message = _messageQueue.Take(stoppingToken);
-
-                string strMessage = Encoding.UTF8.GetString(message.Payload);
-                await _mqttHub.Clients.All.ReceiveMessage(message.Topic, strMessage).ConfigureAwait(false);
-                await SaveMessageAsync(message).ConfigureAwait(false);
-
+                Parallel.For(0, _maxParallelNumber, async (i) =>
+                {
+                    //_ = MqttMessageQueue.TakeFromAny(_messageQueue, out MqttApplicationMessage? message);
+                    MqttApplicationMessage message = _messageQueue.Take();
+                    if (message != null && message.Payload != null && message.Payload.Length > 0)
+                    {
+                        string strMessage = Encoding.UTF8.GetString(message.Payload);
+                        _ = _mqttHub.Clients.All.ReceiveMessage(message.Topic, strMessage).ConfigureAwait(false);
+                        await SaveMessageAsync(_connections[i], message).ConfigureAwait(false);
+                    }
+                });
             }
         }
 
-
-        private Task MessageReceivedCallback(MqttApplicationMessageReceivedEventArgs e)
+        private async Task MessageReceivedCallback(MqttApplicationMessageReceivedEventArgs e)
         {
-            return Task.Run(() =>
-            {
-                _messageQueue.Add(e.ApplicationMessage);
-            });
+            _messageQueue.Add(e.ApplicationMessage);
+            //MqttMessageQueue.AddToAny(_messageQueue, e.ApplicationMessage);
+            await Task.Delay(0).ConfigureAwait(false);
         }
 
-        private Task SaveMessageAsync(MqttApplicationMessage message)
+        private Task SaveMessageAsync(IntPtr conn, MqttApplicationMessage message)
         {
             return Task.Run(() =>
             {
                 CheckItemsModel? info = JsonSerializer.Deserialize<CheckItemsModel>(message.Payload);
 
                 StringBuilder sqlString = new();
-                sqlString.Append($"insert into {info!.DeviceId} using check_items tags (9569, {info.ModelId}, '202109130183', 'X光液位检测机三楼', '缺陷1|缺陷2|缺陷3') values (");
+
+                //using edgedetectiondb.check_items tags (9569, {info.ModelId}, '202109130183', 'X光液位检测机三楼', '缺陷1|缺陷2|缺陷3')
+
+                sqlString.Append($"insert into edgedetectiondb.{info!.DeviceId} values (");
                 sqlString.Append($"'{info.TimestampKey:yyyy-MM-dd HH:mm:ss.fff}',"); // ts timestamp
                 sqlString.Append($"{info.ProductId},"); // product_id int
                 sqlString.Append($"{info.GoodResult},"); // good_result int
@@ -184,7 +221,7 @@ namespace MQTT2MVC4WebApp1.Internal
                 sqlString.Append($"{info.Data20}"); // d20 int
                 sqlString.Append(");");
 
-                IntPtr result = TDengine.Query(_connection, sqlString.ToString());
+                IntPtr result = TDengine.Query(conn, sqlString.ToString());
                 TDengine.FreeResult(result);
             });
         }
