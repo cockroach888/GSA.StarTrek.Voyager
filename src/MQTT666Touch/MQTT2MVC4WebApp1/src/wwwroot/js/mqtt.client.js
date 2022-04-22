@@ -43,12 +43,14 @@ $(async function () {
         .withAutomaticReconnect()
         .build()
 
-    connection.on("ReceiveMessage", function (topic, message) {
+    connection.on("ReceiveMessageAsync", async function (topic, message) {
         //console.log(`Topic: ${topic}, Message: ${message}`)
         count++
 
         $('#msgBox').prepend(`<li>收到 - Topic: ${topic}, Message: ${message}</li>`)
         $('#lblCount').text(count)
+
+        return;
     })
 
     connection.onclose(async error => {

@@ -30,7 +30,7 @@ internal class MQTTServiceHub : Hub<IMQTTServiceClient>
     /// <returns>Task</returns>
     public async Task SendMessage(string topic, string message)
         => await _despatchService.NotifyMessageDespatchAsync(topic, message).ConfigureAwait(false);
-    //await Clients.All.ReceiveMessage(topic, message);
+    //await Clients.All.ReceiveMessageAsync(topic, message);
 
     /// <summary>
     /// 发送消息到所有客户端
@@ -40,7 +40,7 @@ internal class MQTTServiceHub : Hub<IMQTTServiceClient>
     /// <param name="message">消息内容</param>
     /// <returns>Task</returns>
     public async Task SendMessageToCaller(string topic, string message)
-        => await Clients.Caller.ReceiveMessage(topic, message).ConfigureAwait(false);
+        => await Clients.Caller.ReceiveMessageAsync(topic, message).ConfigureAwait(false);
 
     /// <summary>
     /// 发送消息到所有客户端
@@ -50,5 +50,5 @@ internal class MQTTServiceHub : Hub<IMQTTServiceClient>
     /// <param name="message">消息内容</param>
     /// <returns>Task</returns>
     public async Task SendMessageToGroup(string topic, string message)
-        => await Clients.Group("SignalR Users").ReceiveMessage(topic, message).ConfigureAwait(false);
+        => await Clients.Group("SignalR Users").ReceiveMessageAsync(topic, message).ConfigureAwait(false);
 }
