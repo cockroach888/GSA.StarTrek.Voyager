@@ -17,7 +17,7 @@ namespace MQTT2MVC4WebApp1.Internal
 
     internal class MQTTClientHostedServer : BackgroundService
     {
-        private const int _maxParallelNumber = 100;
+        private const int _maxParallelNumber = 1000;
 
         private IntPtr[] _connections = new IntPtr[_maxParallelNumber];
 
@@ -60,7 +60,6 @@ namespace MQTT2MVC4WebApp1.Internal
         {
             _despatchService.MessageDespatch += ReceiveMessageAsync;
 
-
             _logger.LogInformation("注册消息接收回调事件。");
             _mqttClient.ApplicationMessageReceivedAsync += MessageReceivedCallback;
 
@@ -80,13 +79,16 @@ namespace MQTT2MVC4WebApp1.Internal
                  await _mqttClient.SubscribeAsync(mqttSubscribeOptions, cancellationToken).ConfigureAwait(false);
              };
 
-            _mqttClient.DisconnectedAsync += (e) =>
+            _mqttClient.DisconnectedAsync += async (e) =>
             {
                 _logger.LogDebug($"MQTT 连接中断。");
+
                 //_logger.LogDebug($"ResultCode: {e.ConnectResult.ResultCode}");
                 //_logger.LogDebug($"ReasonString: {e.ReasonString}");
                 //_logger.LogError(e.Exception, e.Exception.Message);
-                return Task.CompletedTask;
+
+                _logger.LogInformation($"尝试重新连接到服务端。");
+                await MQTTConnectionAsync().ConfigureAwait(false);
             };
 
 
@@ -98,9 +100,9 @@ namespace MQTT2MVC4WebApp1.Internal
                                          .WithClientId($"AspDotNetCoreClient")
                                          .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
                                          .WithSessionExpiryInterval(0)
-                                         .WithProtocolVersion(MQTTnet.Formatter.MqttProtocolVersion.V311)
+                                         .WithProtocolVersion(MQTTnet.Formatter.MqttProtocolVersion.V500)
                                          .WithCommunicationTimeout(TimeSpan.FromHours(1))
-                                         .WithKeepAlivePeriod(TimeSpan.FromMinutes(2))
+                                         .WithKeepAlivePeriod(TimeSpan.FromMinutes(1))
                                          .WithCleanSession(true)
                                          .Build();
 
@@ -136,7 +138,32 @@ namespace MQTT2MVC4WebApp1.Internal
                 _logger.LogInformation("MQTTClientHostedServer 后台异步执行方法 ExecuteAsync 收到停止令牌通知。");
             });
 
+            await MQTTConnectionAsync(stoppingToken).ConfigureAwait(false);
 
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                //MqttApplicationMessage message = _messageQueue.Take();
+                //string strMessage = Encoding.UTF8.GetString(message.Payload);
+                //await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
+
+                Parallel.For(0, _maxParallelNumber, async (i) =>
+                {
+                    MqttApplicationMessage message = _messageQueue.Take();
+                    if (message != null && message.Payload != null && message.Payload.Length > 0)
+                    {
+                        await SaveMessageAsync(_connections[i], message).ConfigureAwait(false);
+
+                        string strMessage = Encoding.UTF8.GetString(message.Payload);
+                        await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
+                    }
+                });
+                //await Task.Delay(0, stoppingToken).ConfigureAwait(false);
+            }
+            //await Task.Delay(0, stoppingToken).ConfigureAwait(false);
+        }
+
+        private async Task MQTTConnectionAsync(CancellationToken stoppingToken = default)
+        {
             while (true)
             {
                 try
@@ -159,37 +186,13 @@ namespace MQTT2MVC4WebApp1.Internal
                 _logger.LogDebug("程序将在5秒后尝试重新连接服务端。");
                 await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken).ConfigureAwait(false);
             }
-            await Task.Delay(0, stoppingToken).ConfigureAwait(false);
-
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                MqttApplicationMessage message = _messageQueue.Take();
-                string strMessage = Encoding.UTF8.GetString(message.Payload);
-                await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
-
-                //Parallel.For(0, _maxParallelNumber, async (i) =>
-                //{
-                //    MqttApplicationMessage message = _messageQueue.Take();
-                //    if (message != null && message.Payload != null && message.Payload.Length > 0)
-                //    {
-                //        await SaveMessageAsync(_connections[i], message).ConfigureAwait(false);
-
-                //        string strMessage = Encoding.UTF8.GetString(message.Payload);
-                //        await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
-                //    }
-                //});
-                await Task.Delay(0, stoppingToken).ConfigureAwait(false);
-            }
-            await Task.Delay(0, stoppingToken).ConfigureAwait(false);
+            //await Task.Delay(0, stoppingToken).ConfigureAwait(false);
         }
 
-        private async Task MessageReceivedCallback(MqttApplicationMessageReceivedEventArgs e)
+        private Task MessageReceivedCallback(MqttApplicationMessageReceivedEventArgs e)
         {
-            e.AutoAcknowledge = true;
-
-            //_messageQueue.Add(e.ApplicationMessage);
-            await Task.Delay(1).ConfigureAwait(false);
+            return Task.Run(() => _messageQueue.Add(e.ApplicationMessage));
+            //await Task.Delay(1).ConfigureAwait(false);
         }
 
         private Task SaveMessageAsync(IntPtr conn, MqttApplicationMessage message)
