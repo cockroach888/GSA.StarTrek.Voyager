@@ -19,23 +19,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="libtaos.so" />
-	  <None Remove="taos.dll" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="libtaos.so">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="taos.dll">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="6.0.4" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
 		<PackageReference Include="MQTTnet.AspNetCore" Version="4.0.0-preview5" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
 	</ItemGroup>
 
 </Project>

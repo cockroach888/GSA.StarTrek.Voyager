@@ -9,7 +9,6 @@ using MQTTnet.Exceptions;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
-using TDengineDriver;
 
 namespace MQTT2MVC4WebApp1.Internal
 {
@@ -37,13 +36,6 @@ namespace MQTT2MVC4WebApp1.Internal
                                       IMQTTServiceClient> mqttHub,
                                       MessageDespatchService messageDespatchService)
         {
-            //TDengine.Options((int)TDengineInitOption.TDDB_OPTION_CONFIGDIR, ".");
-
-            for (int i = 0; i < _maxParallelNumber; i++)
-            {
-                _connections[i] = TDengine.Connect("192.168.16.221", "root", "taosdata", "EdgeDetectionDB", 0);
-            }
-
             _logger = logger;
             _config = config;
             _mqttHub = mqttHub;
@@ -58,6 +50,9 @@ namespace MQTT2MVC4WebApp1.Internal
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
+            //Environment.
+
+
             _despatchService.MessageDespatch += ReceiveMessageAsync;
 
             _logger.LogInformation("注册消息接收回调事件。");
@@ -137,6 +132,13 @@ namespace MQTT2MVC4WebApp1.Internal
             {
                 _logger.LogInformation("MQTTClientHostedServer 后台异步执行方法 ExecuteAsync 收到停止令牌通知。");
             });
+
+            //TDengine.Options((int)TDengineInitOption.TDDB_OPTION_CONFIGDIR, ".");
+
+            for (int i = 0; i < _maxParallelNumber; i++)
+            {
+                _connections[i] = TDengine.Connect("192.168.16.221", "root", "taosdata", "", 0);
+            }
 
             await MQTTConnectionAsync(stoppingToken).ConfigureAwait(false);
 
