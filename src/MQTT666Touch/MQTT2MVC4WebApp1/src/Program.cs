@@ -16,6 +16,7 @@ builder.Services.AddSingleton<MessageDespatchService>()
 builder.Services.AddSignalR()
                 .AddMessagePackProtocol();
 
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo
@@ -42,18 +43,19 @@ builder.Services.AddSwaggerGen(opt =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!builder.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(opt =>
     {
         opt.SwaggerEndpoint("/swagger/v1/swagger.json", "MQTT2MVC4WebApp API V1");
     });
-    app.UseExceptionHandler("/Error");
+    app.UseDeveloperExceptionPage();
+    //app.UseWelcomePage();
 }
 else
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/Error");
 }
 
 app.UseStaticFiles();
@@ -68,6 +70,6 @@ app.MapControllerRoute(
 
 app.MapHub<MQTTServiceHub>("/mqttHub");
 
-//app.UseWelcomePage();
+//app.MapGet("/", () => Results.LocalRedirect("/swagger"));
 
 app.Run();
