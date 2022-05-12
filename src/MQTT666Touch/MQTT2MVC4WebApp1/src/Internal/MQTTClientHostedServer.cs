@@ -50,9 +50,6 @@ namespace MQTT2MVC4WebApp1.Internal
 
         public override async Task StartAsync(CancellationToken cancellationToken)
         {
-            //Environment.
-
-
             _despatchService.MessageDespatch += ReceiveMessageAsync;
 
             _logger.LogInformation("注册消息接收回调事件。");
@@ -116,13 +113,6 @@ namespace MQTT2MVC4WebApp1.Internal
 
             using (_messageQueue) { };
 
-            // 释放所有连接
-            foreach (IntPtr conn in _connections)
-            {
-                _ = TDengine.Close(conn);
-                TDengine.Cleanup();
-            }
-
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -132,13 +122,6 @@ namespace MQTT2MVC4WebApp1.Internal
             {
                 _logger.LogInformation("MQTTClientHostedServer 后台异步执行方法 ExecuteAsync 收到停止令牌通知。");
             });
-
-            //TDengine.Options((int)TDengineInitOption.TDDB_OPTION_CONFIGDIR, ".");
-
-            for (int i = 0; i < _maxParallelNumber; i++)
-            {
-                _connections[i] = TDengine.Connect("192.168.16.221", "root", "taosdata", "", 0);
-            }
 
             await MQTTConnectionAsync(stoppingToken).ConfigureAwait(false);
 
@@ -235,8 +218,8 @@ namespace MQTT2MVC4WebApp1.Internal
                 sqlString.Append($"{info.Data20}"); // d20 int
                 sqlString.Append(");");
 
-                IntPtr result = TDengine.Query(conn, sqlString.ToString());
-                TDengine.FreeResult(result);
+                //IntPtr result = TDengine.Query(conn, sqlString.ToString());
+                //TDengine.FreeResult(result);
             });
         }
 
