@@ -37,18 +37,13 @@ internal sealed class TDengineAPIContext
 
     private async Task<HttpStatusCode> Execution(string sqlString)
     {
-        var client = new RestClient($"http://192.168.16.221:6041/rest/sql/EdgeDetectionDB");
-        client.AddDefaultHeader(HeaderNames.Authorization, _token);
-        //client.Authenticator = new HttpBasicAuthenticator("root", "taosdata");
+        var client = new RestClient(_host);
+        client.Authenticator = new HttpBasicAuthenticator("root", "taosdata");
 
-        var request = new RestRequest().AddBody(sqlString);
-        //request.AddHeader(HeaderNames.ContentType, MediaTypeNames.Text.Plain);
+        var request = new RestRequest(_post, Method.Post);
+        request.AddStringBody(sqlString, DataFormat.None);
 
         var response = await client.PostAsync(request);
-
-
-
-
 
         return response.StatusCode;
 
@@ -112,7 +107,7 @@ internal sealed class TDengineAPIContext
 
     public async Task<short> Update()
     {
-        HttpStatusCode result = await Execution("show databases;").ConfigureAwait(false);
+        HttpStatusCode result = await Execution("show stables;").ConfigureAwait(false);
         return (short)result;
     }
 

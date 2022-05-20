@@ -121,10 +121,9 @@ namespace MQTT2MVC4WebApp1.Internal
             });
 
 
-
             //TDengineAPIContext.Default.Delete(new CheckItemsModel());
 
-            await TDengineAPIContext.Default.Update().ConfigureAwait(false);
+            //await TDengineAPIContext.Default.Update().ConfigureAwait(false);
 
 
             await MQTTConnectionAsync(stoppingToken).ConfigureAwait(false);
