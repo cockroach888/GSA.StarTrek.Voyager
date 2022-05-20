@@ -2,6 +2,7 @@
 
 namespace MQTT2MVC4WebApp1.Controllers;
 
+[Route("[controller]/[action]")]
 public class SightXController : Controller
 {
     private readonly ILogger<SightXController> _logger;

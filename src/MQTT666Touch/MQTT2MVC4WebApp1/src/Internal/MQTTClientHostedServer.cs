@@ -12,15 +12,12 @@ using System.Text.Json;
 
 namespace MQTT2MVC4WebApp1.Internal
 {
-    using MqttMessageQueue = BlockingCollection<MqttApplicationMessage>;
+    //using MqttMessageQueue = BlockingCollection<MessageModel>;
 
     internal class MQTTClientHostedServer : BackgroundService
     {
-        private const int _maxParallelNumber = 1000;
-
-        private IntPtr[] _connections = new IntPtr[_maxParallelNumber];
-
-        private readonly MqttMessageQueue _messageQueue = new();
+        private const int _maxParallelNumber = 100;
+        private readonly BlockingCollection<MessageModel> _messageQueue = new();
         private readonly ILogger<MQTTClientHostedServer> _logger;
         private readonly IConfiguration _config;
         private readonly IHubContext<MQTTServiceHub, IMQTTServiceClient> _mqttHub;
@@ -86,8 +83,8 @@ namespace MQTT2MVC4WebApp1.Internal
 
             _logger.LogInformation("构建服务端连接参数信息。");
             _clientOptions = _mqttFactory.CreateClientOptionsBuilder()
-                                         .WithTcpServer("127.0.0.1")
-                                         //.WithTcpServer("192.168.16.221")
+                                         //.WithTcpServer("127.0.0.1")
+                                         .WithTcpServer("192.168.16.221")
                                          .WithCredentials("test", "test")
                                          .WithClientId($"AspDotNetCoreClient")
                                          .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
@@ -123,28 +120,27 @@ namespace MQTT2MVC4WebApp1.Internal
                 _logger.LogInformation("MQTTClientHostedServer 后台异步执行方法 ExecuteAsync 收到停止令牌通知。");
             });
 
+
+
+            //TDengineAPIContext.Default.Delete(new CheckItemsModel());
+
+            await TDengineAPIContext.Default.Update().ConfigureAwait(false);
+
+
             await MQTTConnectionAsync(stoppingToken).ConfigureAwait(false);
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                //MqttApplicationMessage message = _messageQueue.Take();
-                //string strMessage = Encoding.UTF8.GetString(message.Payload);
-                //await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
-
                 Parallel.For(0, _maxParallelNumber, async (i) =>
                 {
-                    MqttApplicationMessage message = _messageQueue.Take();
-                    if (message != null && message.Payload != null && message.Payload.Length > 0)
-                    {
-                        await SaveMessageAsync(_connections[i], message).ConfigureAwait(false);
+                    MessageModel message = _messageQueue.Take();
 
-                        string strMessage = Encoding.UTF8.GetString(message.Payload);
-                        await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
-                    }
+                    await SaveMessageAsync(message).ConfigureAwait(false);
+
+                    string strMessage = Encoding.UTF8.GetString(message.Payload);
+                    await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
                 });
-                //await Task.Delay(0, stoppingToken).ConfigureAwait(false);
             }
-            //await Task.Delay(0, stoppingToken).ConfigureAwait(false);
         }
 
         private async Task MQTTConnectionAsync(CancellationToken stoppingToken = default)
@@ -174,53 +170,20 @@ namespace MQTT2MVC4WebApp1.Internal
             //await Task.Delay(0, stoppingToken).ConfigureAwait(false);
         }
 
-        private Task MessageReceivedCallback(MqttApplicationMessageReceivedEventArgs e)
+        private async Task MessageReceivedCallback(MqttApplicationMessageReceivedEventArgs e)
         {
-            return Task.Run(() => _messageQueue.Add(e.ApplicationMessage));
-            //await Task.Delay(1).ConfigureAwait(false);
+            MqttApplicationMessage msg = e.ApplicationMessage;
+            if (msg != null && msg.Payload != null && msg.Payload.Length > 0)
+            {
+                _messageQueue.Add(MessageModel.New(msg.Topic, msg.Payload));
+            }
+            await Task.Delay(1).ConfigureAwait(false);
         }
 
-        private Task SaveMessageAsync(IntPtr conn, MqttApplicationMessage message)
+        private async Task SaveMessageAsync(MessageModel message)
         {
-            return Task.Run(() =>
-            {
-                CheckItemsModel? info = JsonSerializer.Deserialize<CheckItemsModel>(message.Payload);
-
-                StringBuilder sqlString = new();
-
-                sqlString.Append($"insert into edgedetectiondb.{info!.DeviceId} values (");
-                sqlString.Append($"'{info.TimestampKey:yyyy-MM-dd HH:mm:ss.fff}',"); // ts timestamp
-                sqlString.Append($"{info.ProductId},"); // product_id int
-                sqlString.Append($"{info.GoodResult},"); // good_result int
-                sqlString.Append($"{info.BadResult},"); // bad_result int
-                sqlString.Append($"{info.ExceptionResult},"); // exception_result int
-                sqlString.Append($"'{info.Note}',"); // note nchar(1000)
-                sqlString.Append($"'{info.SavePath}',"); // save_path nchar(200)
-                sqlString.Append($"{info.Data1},"); // d1 int
-                sqlString.Append($"{info.Data2},"); // d2 int
-                sqlString.Append($"{info.Data3},"); // d3 int
-                sqlString.Append($"{info.Data4},"); // d4 int
-                sqlString.Append($"{info.Data5},"); // d5 int
-                sqlString.Append($"{info.Data6},"); // d6 int
-                sqlString.Append($"{info.Data7},"); // d7 int
-                sqlString.Append($"{info.Data8},"); // d8 int
-                sqlString.Append($"{info.Data9},"); // d9 int
-                sqlString.Append($"{info.Data10},"); // d10 int
-                sqlString.Append($"{info.Data11},"); // d11 int
-                sqlString.Append($"{info.Data12},"); // d12 int
-                sqlString.Append($"{info.Data13},"); // d13 int
-                sqlString.Append($"{info.Data14},"); // d14 int
-                sqlString.Append($"{info.Data15},"); // d15 int
-                sqlString.Append($"{info.Data16},"); // d16 int
-                sqlString.Append($"{info.Data17},"); // d17 int
-                sqlString.Append($"{info.Data18},"); // d18 int
-                sqlString.Append($"{info.Data19},"); // d19 int
-                sqlString.Append($"{info.Data20}"); // d20 int
-                sqlString.Append(");");
-
-                //IntPtr result = TDengine.Query(conn, sqlString.ToString());
-                //TDengine.FreeResult(result);
-            });
+            CheckItemsModel? info = JsonSerializer.Deserialize<CheckItemsModel>(message.Payload);
+            await TDengineAPIContext.Default.Insert(info!);
         }
 
         private async Task ReceiveMessageAsync(string topic, string message)
