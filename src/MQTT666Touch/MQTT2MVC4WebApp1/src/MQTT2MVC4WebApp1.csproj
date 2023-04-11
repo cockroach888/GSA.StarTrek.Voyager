@@ -20,6 +20,10 @@
 
 	<ItemGroup>
 	  <Content Remove="wwwroot\index.html" />
+	  <Content Remove="wwwroot\plugins\signalr\signalr-protocol-msgpack.js" />
+	  <Content Remove="wwwroot\plugins\signalr\signalr-protocol-msgpack.js.map" />
+	  <Content Remove="wwwroot\plugins\signalr\signalr-protocol-msgpack.min.js" />
+	  <Content Remove="wwwroot\plugins\signalr\signalr-protocol-msgpack.min.js.map" />
 	</ItemGroup>
 
 	<ItemGroup>

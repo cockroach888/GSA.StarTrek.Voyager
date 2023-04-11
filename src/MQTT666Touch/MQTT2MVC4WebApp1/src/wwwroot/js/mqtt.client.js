@@ -33,9 +33,10 @@ async function start() {
 
 $(async function () {
     connection = new signalR.HubConnectionBuilder()
-        .withUrl("/mqttHub", {
+        .withUrl("http://localhost:9394/xsight", {
             transport: signalR.HttpTransportType.LongPolling
         })
+        .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
         .configureLogging(logging => {
             logging.SetMinimumLevel(LogLevel.Debug)
             logging.AddConsole()

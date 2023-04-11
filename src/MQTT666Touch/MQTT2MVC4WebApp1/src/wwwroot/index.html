@@ -42,6 +42,24 @@
         </nav>
     </header>
     <div class="container-fluid">
+        <div class="row mb-3">
+            <div class="col-auto">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="txtHostAdress" aria-describedby="inputGroupFileAddon04" aria-label="Upload" style="width:650px;" value="http://localhost:9394/xsight">
+                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onclick="OnConnectionSignalR()">连接</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-auto">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="txtPushMsg" aria-describedby="inputGroupFileAddon05" aria-label="Upload" style="width:650px;" value="This is a test message.">
+                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon05" onclick="OnPushMsgToSignalR()">发送1</button>
+                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon05" onclick="OnPushMsgToSignalRPlus()">发送2</button>                    
+                </div>
+            </div>
+        </div>
+
         <main role="main" class="pb-3">
             <div class="row">
                 <div class="col-md-9">
@@ -134,10 +152,70 @@
     <script type="text/javascript" src="plugins/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="assets/js/wenque-all.js"></script>
+
+    <script type="text/javascript" src="plugins/signalr/signalr.min.js"></script>
+    <script type="text/javascript" src="plugins/signalr/signalr-protocol-msgpack.min.js"></script>
+
     <script type="text/javascript">
         $(function () {
             console.log('WenQue version: ', WenQue.version);
         });
+
+        let connection
+
+        async function OnConnectionSignalR() {
+            const host = document.getElementById('txtHostAdress').value
+
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl(host, {
+                    skipNegotiation: true,
+                    transport: signalR.HttpTransportType.WebSockets
+                })
+                .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+
+            async function start() {
+                try {
+                    await connection.start();
+                    console.log("SignalR Connected.");
+                } catch (err) {
+                    console.log(err);
+                    //setTimeout(start, 5000);
+                }
+            };
+
+            connection.onclose(async () => {
+                await start();
+            });
+
+            // Start the connection.
+            start();
+        }
+
+
+        async function OnPushMsgToSignalR() {
+            const content = document.getElementById('txtPushMsg').value
+
+            try {
+                //await connection.invoke("SendMessage", { Keyword: "OnPushMsgToSignalR", Content: "sdfsdf" })
+                await connection.invoke("SendMessage", content)
+            } catch (err) {
+                console.error(err)
+            }
+        }
+
+        async function OnPushMsgToSignalRPlus() {
+            const content = document.getElementById('txtPushMsg').value
+
+            try {
+                //await connection.invoke("SendMessage", { Keyword: "OnPushMsgToSignalR", Content: "sdfsdf" })
+                connection.invoke("SendMessageToCaller", { Keyword: "Sally", Content: "Hello!" });
+            } catch (err) {
+                console.error(err)
+            }
+        }
     </script>
 </body>
 </html>

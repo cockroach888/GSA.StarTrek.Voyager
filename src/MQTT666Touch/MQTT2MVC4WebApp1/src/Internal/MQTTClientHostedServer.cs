@@ -96,7 +96,7 @@ namespace MQTT2MVC4WebApp1.Internal
                                          .Build();
 
 
-            await base.StartAsync(cancellationToken).ConfigureAwait(false);
+            //await base.StartAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
