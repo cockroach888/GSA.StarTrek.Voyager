@@ -198,6 +198,11 @@
                 return;
             })
 
+            connection.on("DeviceCradReceived", async function (message) {
+                console.log(message)
+                return;
+            })
+
             connection.onclose(async error => {
                 console.log('服务端关闭连接。')
 

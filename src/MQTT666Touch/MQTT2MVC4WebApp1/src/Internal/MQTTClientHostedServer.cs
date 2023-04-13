@@ -96,7 +96,7 @@ namespace MQTT2MVC4WebApp1.Internal
                                          .Build();
 
 
-            //await base.StartAsync(cancellationToken).ConfigureAwait(false);
+            await base.StartAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
@@ -126,20 +126,22 @@ namespace MQTT2MVC4WebApp1.Internal
             //await TDengineAPIContext.Default.Update().ConfigureAwait(false);
 
 
-            await MQTTConnectionAsync(stoppingToken).ConfigureAwait(false);
+            await Task.Delay(0).ConfigureAwait(false);
 
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                Parallel.For(0, _maxParallelNumber, async (i) =>
-                {
-                    MessageModel message = _messageQueue.Take();
+            //await MQTTConnectionAsync(stoppingToken).ConfigureAwait(false);
 
-                    await SaveMessageAsync(message).ConfigureAwait(false);
+            //while (!stoppingToken.IsCancellationRequested)
+            //{
+            //    Parallel.For(0, _maxParallelNumber, async (i) =>
+            //    {
+            //        MessageModel message = _messageQueue.Take();
 
-                    string strMessage = Encoding.UTF8.GetString(message.Payload);
-                    await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
-                });
-            }
+            //        await SaveMessageAsync(message).ConfigureAwait(false);
+
+            //        string strMessage = Encoding.UTF8.GetString(message.Payload);
+            //        await _mqttHub.Clients.All.ReceiveMessageAsync(message.Topic, strMessage).ConfigureAwait(false);
+            //    });
+            //}
         }
 
         private async Task MQTTConnectionAsync(CancellationToken stoppingToken = default)

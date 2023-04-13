@@ -70,6 +70,6 @@ app.MapControllerRoute(
 
 app.MapHub<MQTTServiceHub>("/mqttHub");
 
-//app.MapGet("/", () => Results.LocalRedirect("/swagger"));
+app.MapGet("/", () => Results.LocalRedirect("/index.html"));
 
 app.Run();
